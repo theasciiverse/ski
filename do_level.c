@@ -50,7 +50,7 @@ PRIVATE char *injuries[] = {
 /*
 ** Color support code
 **
-** hacked in on a whim by Eric Raymond (eric@snark.thyrsus.com)
+** hacked in on a whim by Eric Raymond <esr@thyrsus.com>
 */
 #ifdef A_COLOR
 #define	MAXCOLORS	8
@@ -78,8 +78,7 @@ void init_colors()
 ** "draw_picture"
 */
 
-PUBLIC int draw_picture(current_level)
-LEVEL *current_level;
+PUBLIC int draw_picture(LEVEL *current_level)
 {
 	char level_picture[LINE_LEN + 1];
 #ifdef A_COLOR
@@ -162,10 +161,7 @@ LEVEL *current_level;
 ** the severity.  This function should never return.
 */
 
-PRIVATE int accident(current_level, msg, severity)
-LEVEL *current_level;
-char *msg;
-short severity;
+PRIVATE int accident(LEVEL *current_level, char *msg, short severity)
 {
 	int degree;
 	long score;
@@ -236,8 +232,7 @@ short severity;
 ** "check_obstacles"
 */
 
-PRIVATE int check_obstacles(current_level)
-LEVEL *current_level;
+PRIVATE int check_obstacles(LEVEL *current_level)
 {
 	short player_pos;
 	char *slope;
@@ -291,8 +286,7 @@ LEVEL *current_level;
 ** "do_command" gets a command from the player and performs it.
 */
 
-PRIVATE int do_command(current_level)
-LEVEL *current_level;
+PRIVATE int do_command(LEVEL *current_level)
 {
 	register int player_pos;
 	char command_buf[LINE_LEN + 1];
@@ -380,8 +374,7 @@ LEVEL *current_level;
 ** "do_user"
 */
 
-PUBLIC int do_user(current_level)
-LEVEL *current_level;
+PUBLIC int do_user(LEVEL *current_level)
 {
 	/*
 	** If we are jumping, just finish the line.  Otherwise, check for
@@ -400,8 +393,7 @@ LEVEL *current_level;
 ** "manipulate_objects"
 */
 
-PUBLIC int manipulate_objects(current_level)
-LEVEL *current_level;
+PUBLIC int manipulate_objects(LEVEL *current_level)
 {
 	/*
 	** If there is a Snoman, the player's jet-powered skis may melt him,
@@ -500,4 +492,4 @@ LEVEL *current_level;
 	}
 }
 
-
+/* end */
