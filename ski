@@ -177,7 +177,7 @@ class SkiWorld:
         return exists(pos) and abs(pos - self.player_pos) <= min        
 
     def teleport(self):
-        "Return a erandom location"
+        "Return a random location"
         return random.choice(range(len(self.slope)))
 
     def gen_next_slope(self, next_level):
