@@ -1,5 +1,5 @@
 Name: ski
-Version: 6.5
+Version: 6.6
 Release: 1
 URL: http://www.catb.org/~esr/ski/
 Source0: %{name}-%{version}.tar.gz

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """\
-This is ski %s, designed by Mark Stevans, ported by Eric S. Raymond.
+This is ski %s, designed by Mark Stevans, Python port by Eric S. Raymond.
 You are hurtling down a ski slope in reverse, trying to evade the Yeti.
 Available commands are:
 
@@ -13,7 +13,7 @@ Available commands are:
  ? = print this help message.
 
 """
-version='6.4'
+version='6.6'
 import time, random, curses, copy, sys, os
 
 REP_SNOW	= '.'
@@ -82,7 +82,7 @@ POINTS_PER_METER = 1
 # assistance of the Fire Demon.
 POINTS_PER_MELTED_YETI = 100
 
-# Number of pints docked from your score for each degree of injury.
+# Number of points docked from your score for each degree of injury.
 POINTS_PER_INJURY_DEGREE = -40
 
 # The injury categories.
