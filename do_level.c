@@ -58,7 +58,6 @@ static char	colorstrings[MAXCOLORS][20];
 
 void init_colors()
 {
-    extern char	*tparm(), *tgetstr(), *getenv();
     char	*cp;
     int		i;
 
@@ -155,130 +154,6 @@ LEVEL *current_level;
 	*/
 
 	return (SUCCESS);
-}
-
-/*
-** "do_user"
-*/
-
-PUBLIC int do_user(current_level)
-LEVEL *current_level;
-{
-	/*
-	** If we are jumping, just finish the line.  Otherwise, check for
-	** obstacles, and do a command.
-	*/
-
-	if (current_level->jump_count >= 0)
-		putchar('\n');
-	else {
-		check_obstacles(current_level);
-		do_command(current_level);
-	}
-}
-
-/*
-** "manipulate_objects"
-*/
-
-PUBLIC int manipulate_objects(current_level)
-LEVEL *current_level;
-{
-	/*
-	** If there is a Snoman, the player's jet-powered skis may melt him,
-	** or he may spontaneously melt.
-	*/
-
-	if (EXISTS(current_level->snoman_pos)) {
-		if (((ABS(current_level->snoman_pos - current_level->player_pos) <= 1) &&
-				PROB(PROB_SKIS_MELT_SNOMAN)) ||
-				PROB(PROB_SPONTANEOUS_MELT)) {
-			current_level->snoman_pos = NO_POSITION;
-			++current_level->num_snomen_melted;
-		}
-	}
-
-	/*
-	** If there is a Snoman, move him towards the player.  If there is a		** tree in the way, the Snoman is blocked.
-	*/
-
-	if (EXISTS(current_level->snoman_pos)) {
-		if (current_level->snoman_pos < current_level->player_pos) {
-			if (current_level->slope[current_level->snoman_pos + 1] != REP_TREE)
-				++current_level->snoman_pos;
-		}
-
-		else {
-			if (current_level->slope[current_level->snoman_pos - 1] != REP_TREE)
-				--current_level->snoman_pos;
-		}
-	}
-
-	/*                  
-	** If there is an ICBM, handle it.
-	*/
-
-	if (EXISTS(current_level->icbm_pos)) {
-		/*
-		** If there is a Snoman, move the ICBM towards him.  Else,
-		** self-destruct the ICBM.
-		*/
-
-		if (EXISTS(current_level->snoman_pos)) {
-			if (current_level->icbm_pos < current_level->snoman_pos)
-				current_level->icbm_pos += ICBM_SPEED;
-			else
-				current_level->icbm_pos -= ICBM_SPEED;
-		}
-		else
-			current_level->icbm_pos = NO_POSITION;
-	}
-
-	/*
-	** If there is a fire demon on the level, handle it.
-	*/
-
-	if (EXISTS(current_level->demon_pos)) {
-		/*
-		** If there is a Snoman on the current level, move the demon
-		** towards him.  Else, the demon might decide to leave.
-		*/
-
-		if (EXISTS(current_level->snoman_pos)) {
-			if (current_level->demon_pos < current_level->snoman_pos)
-				current_level->demon_pos += DEMON_SPEED;
-			else
-				current_level->demon_pos -= DEMON_SPEED;
-		}
-		else {
-			if (PROB(25.0))
-				current_level->demon_pos = NO_POSITION;
-		}
-	}
-
-	/*
-	** If there is a Snoman and an ICBM on the slope, the Snoman
-	** might get melted.
-	*/
-
-	if (EXISTS(current_level->snoman_pos) && EXISTS(current_level->icbm_pos)) {
-		if (ABS(current_level->snoman_pos - current_level->icbm_pos) <= ICBM_RANGE) {
-			current_level->icbm_pos = NO_POSITION;
-			current_level->snoman_pos = NO_POSITION;
-			++current_level->num_snomen_melted;
-		}
-	}
-
-	/*
-	** If there is a Snoman and a fire demon, he might get melted.
-	*/
-
-	if (EXISTS(current_level->snoman_pos) && EXISTS(current_level->demon_pos)) {
-		if (ABS(current_level->snoman_pos - current_level->demon_pos) <= 1) {
-			current_level->snoman_pos = NO_POSITION;
-			++current_level->num_snomen_melted;
-		}
-	}
 }
 
 /*
@@ -500,3 +375,129 @@ LEVEL *current_level;
 		break;
 	}
 }
+
+/*
+** "do_user"
+*/
+
+PUBLIC int do_user(current_level)
+LEVEL *current_level;
+{
+	/*
+	** If we are jumping, just finish the line.  Otherwise, check for
+	** obstacles, and do a command.
+	*/
+
+	if (current_level->jump_count >= 0)
+		putchar('\n');
+	else {
+		check_obstacles(current_level);
+		do_command(current_level);
+	}
+}
+
+/*
+** "manipulate_objects"
+*/
+
+PUBLIC int manipulate_objects(current_level)
+LEVEL *current_level;
+{
+	/*
+	** If there is a Snoman, the player's jet-powered skis may melt him,
+	** or he may spontaneously melt.
+	*/
+
+	if (EXISTS(current_level->snoman_pos)) {
+		if (((ABS(current_level->snoman_pos - current_level->player_pos) <= 1) &&
+				PROB(PROB_SKIS_MELT_SNOMAN)) ||
+				PROB(PROB_SPONTANEOUS_MELT)) {
+			current_level->snoman_pos = NO_POSITION;
+			++current_level->num_snomen_melted;
+		}
+	}
+
+	/*
+	** If there is a Snoman, move him towards the player.  If there is a		** tree in the way, the Snoman is blocked.
+	*/
+
+	if (EXISTS(current_level->snoman_pos)) {
+		if (current_level->snoman_pos < current_level->player_pos) {
+			if (current_level->slope[current_level->snoman_pos + 1] != REP_TREE)
+				++current_level->snoman_pos;
+		}
+
+		else {
+			if (current_level->slope[current_level->snoman_pos - 1] != REP_TREE)
+				--current_level->snoman_pos;
+		}
+	}
+
+	/*                  
+	** If there is an ICBM, handle it.
+	*/
+
+	if (EXISTS(current_level->icbm_pos)) {
+		/*
+		** If there is a Snoman, move the ICBM towards him.  Else,
+		** self-destruct the ICBM.
+		*/
+
+		if (EXISTS(current_level->snoman_pos)) {
+			if (current_level->icbm_pos < current_level->snoman_pos)
+				current_level->icbm_pos += ICBM_SPEED;
+			else
+				current_level->icbm_pos -= ICBM_SPEED;
+		}
+		else
+			current_level->icbm_pos = NO_POSITION;
+	}
+
+	/*
+	** If there is a fire demon on the level, handle it.
+	*/
+
+	if (EXISTS(current_level->demon_pos)) {
+		/*
+		** If there is a Snoman on the current level, move the demon
+		** towards him.  Else, the demon might decide to leave.
+		*/
+
+		if (EXISTS(current_level->snoman_pos)) {
+			if (current_level->demon_pos < current_level->snoman_pos)
+				current_level->demon_pos += DEMON_SPEED;
+			else
+				current_level->demon_pos -= DEMON_SPEED;
+		}
+		else {
+			if (PROB(25.0))
+				current_level->demon_pos = NO_POSITION;
+		}
+	}
+
+	/*
+	** If there is a Snoman and an ICBM on the slope, the Snoman
+	** might get melted.
+	*/
+
+	if (EXISTS(current_level->snoman_pos) && EXISTS(current_level->icbm_pos)) {
+		if (ABS(current_level->snoman_pos - current_level->icbm_pos) <= ICBM_RANGE) {
+			current_level->icbm_pos = NO_POSITION;
+			current_level->snoman_pos = NO_POSITION;
+			++current_level->num_snomen_melted;
+		}
+	}
+
+	/*
+	** If there is a Snoman and a fire demon, he might get melted.
+	*/
+
+	if (EXISTS(current_level->snoman_pos) && EXISTS(current_level->demon_pos)) {
+		if (ABS(current_level->snoman_pos - current_level->demon_pos) <= 1) {
+			current_level->snoman_pos = NO_POSITION;
+			++current_level->num_snomen_melted;
+		}
+	}
+}
+
+

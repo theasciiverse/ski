@@ -96,41 +96,6 @@ LEVEL *level_ptr;
 }
 
 /*
-** "main" is the top level function of the game.
-*/
-
-PUBLIC int main()
-{
-	LEVEL level;
-
-#ifdef A_COLOR
-	/*
-	** Initialize the color support.
-	*/
-
-	init_colors();
-#endif /* A_COLOR */
-
-	/*
-	** Initialize the game.
-	*/
-
-	if (init(&level) != SUCCESS)
-		exit(1);
-
-	/*
-	** Perform the game loop until the game is over.
-	*/
-
-	for (;;) {
-		draw_picture(&level);
-		do_user(&level);
-		manipulate_objects(&level);
-		update_level(&level);
-	}
-}
-
-/*
 ** "gen_next_slope" generates the slope of the next level, dependent upon
 ** the characteristics of the current level, the probabilities, and the
 ** position of the player.
@@ -302,3 +267,40 @@ LEVEL *current_level;
 
 	return (SUCCESS);
 }
+
+/*
+** "main" is the top level function of the game.
+*/
+
+PUBLIC int main()
+{
+	LEVEL level;
+
+#ifdef A_COLOR
+	/*
+	** Initialize the color support.
+	*/
+
+	init_colors();
+#endif /* A_COLOR */
+
+	/*
+	** Initialize the game.
+	*/
+
+	if (init(&level) != SUCCESS)
+		exit(1);
+
+	/*
+	** Perform the game loop until the game is over.
+	*/
+
+	for (;;) {
+		draw_picture(&level);
+		do_user(&level);
+		manipulate_objects(&level);
+		update_level(&level);
+	}
+}
+
+
