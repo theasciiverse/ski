@@ -1,0 +1,541 @@
+#!/usr/bin/env python
+#                                  S K I !
+#
+# Version 6.0 of October 14, 1990
+# Copyright 1983-1990 by Mark Stevans for Roy's Games, Inc.
+#
+# Version 6.1 of December 30 2003
+# Rewritten in Python
+# Copright 2003 by Eric S. Raymond
+#
+"""
+This is ski %s, designed by Mark Stevans, ported by Eric S. Raymond.
+You are hurtling down a ski slope in reverse, trying to evade the Yeti.
+Available commands are:
+
+ l = turn left            r = turn right
+ j = jump                 h = hop
+ t = teleport             Enter = keep skiing
+ i = launch ICBM          d = summon Fire Demon
+"""
+version='6.1'
+import time, random, curses, copy, sys
+
+REP_SNOW	= '.'
+REP_TREE	= 'Y'
+REP_GROUND	= ':'
+REP_ICE 	= '#'
+REP_PLAYER	= 'I'
+REP_YETI	= 'A'
+REP_ICBM	= '*'
+REP_DEMON	= 'D'
+
+terrain_key = """
+Terrain types:   %s = snow      %s = tree  %s = bare ground     %s = ice
+Creatures:       %s = player    %s = yeti  %s = ICBM            %s = fire demon
+""" \
+% (REP_SNOW, REP_TREE, REP_GROUND, \
+   REP_ICE, REP_PLAYER, REP_YETI, \
+   REP_ICBM, REP_DEMON) 
+
+# Length of line
+LINE_LEN = 70
+
+# "MIN_YETI_APPEARANCE_DISTANCE" is the minimum distance from the player
+# at which a new Yeti may appear.
+MIN_YETI_APPEARANCE_DISTANCE = 3
+
+# "LEVEL_MULTIPLIER" is a constant multiplied into the first element of the
+# cellular growth automaton probability array with each passing level.
+LEVEL_MULTIPLIER = 1.01
+
+# "MAX_HORIZONTAL_PLAYER_SPEED" defines the absolute value of the maximum
+#horizontal player speed.
+MAX_HORIZONTAL_PLAYER_SPEED = 5
+
+# "PROB_SKIS_MELT_YETI" is the probability that the player's jet-powered
+# skis will melt the Yeti during each turn in which the player is jumping
+# over the Yeti.
+PROB_SKIS_MELT_YETI = 20.0
+
+# "PROB_SPONTANEOUS_MELT" is the probability that the Yeti melts
+# spontaneously during any given turn.
+PROB_SPONTANEOUS_MELT = 1.0
+
+# "ICBM_SPEED" is the horizontal speed of an ICBM.
+ICBM_SPEED = 3
+
+# "ICBM_RANGE" is the horizontal Yeti lethality range of the ICBM.
+ICBM_RANGE = 2
+
+# "DEMON_RANGE" is the horizontal Yeti lethality range of the demon.
+DEMON_RANGE = 1
+
+# "ICBM_SPEED" is the maximum horizontal speed of an ICBM.
+DEMON_SPEED = 1
+
+# "PROB_BAD_SPELL" is the probability that the "Incant Fire Demon" spell will
+# be bad during each incantation.
+PROB_BAD_SPELL = 10.0
+
+# "PROB_BAD_TELEPORT" is the probability that the teleportation device will
+# fail to safely teleport the player during each application.
+PROB_BAD_TELEPORT = 10.0
+
+# "PROB_BAD_ICBM" is the probability that a nuclear ICBM will detonate in
+# the player's backpack during each launch.
+PROB_BAD_ICBM = 30.0
+
+# "PROB_SLIP_ON_ICE" is the probability that the player will slip on the ice
+# and fall down for each turn during which the player is skiiing on ice.
+PROB_SLIP_ON_ICE = 2.0
+
+# "PROB_FALL_ON_GROUND" is the probability that the player will fall down
+# for each turn during which the player is skiiing on bare ground.
+PROB_FALL_ON_GROUND = 10.0
+
+# "PROB_HIT_TREE" is the probability that the player will hit a tree in
+# each turn during which the player is skiiing past a tree.
+PROB_HIT_TREE = 25.0
+
+# "PROB_BAD_LANDING" is the probability that the player will land badly and
+# fall down during a landing from a jump or hop.
+PROB_BAD_LANDING = 3.0
+
+# "POINTS_PER_JUMP" is the number of points awarded to the player for the
+# successful completion of one jump.  For scoring purposes, a hop is
+# considered to consist of exactly one half-jump.
+POINTS_PER_JUMP	= 20
+
+# "POINTS_PER_METER" is the number of points awarded to the player for each
+# meter of horizontal or vertical motion during each turn.
+POINTS_PER_METER = 1
+
+# "POINTS_PER_MELTED_YETI" is the number of points awarded to the player
+# for each Yeti that melts during the course of the game, regardless of
+# whether the player passively caused the Yeti to melt by luring him from a
+# snowbank, or actively melted the Yeti using his skis, an ICBM, or with
+# the assistance of the Fire Demon.
+POINTS_PER_MELTED_YETI = 100
+
+# "POINTS_PER_INJURY_DEGREE" is number of pints docked from your score
+# for each degree of injury.
+POINTS_PER_INJURY_DEGREE = -40
+
+# The injury categories.
+SLIGHT_INJURY		= 0
+MODERATE_INJURY		= 3
+SEVERE_INJURY		= 6
+
+# The randomness of injury degrees.
+INJURY_RANDOMNESS	= 6
+
+colordict = {
+    REP_SNOW	: curses.COLOR_WHITE,
+    REP_TREE	: curses.COLOR_GREEN,
+    REP_PLAYER	: curses.COLOR_MAGENTA,
+    REP_GROUND	: curses.COLOR_YELLOW,	# Brown on PC-compatibles
+    REP_ICE	: curses.COLOR_CYAN,
+    REP_YETI	: curses.COLOR_BLUE,
+    REP_ICBM	: curses.COLOR_MAGENTA,
+    REP_DEMON	: curses.COLOR_RED
+    }
+
+def prob(X):
+    return (random.randint(0, 9999) / 100.0) <= (X)
+def exists(X):
+    return X != None
+
+class SkiWorld:
+    def __init__(self):
+        # Constants controlling the multiple cellular growth
+        # automatons that are executed in parallel to generate
+        # hazards.
+        #
+        # Each cellular growth automaton probability element tends to control a
+        # different facet of hazard generation:
+        #
+        #    [0] appearance of new hazards in clear snow
+        #    [1] hazards edge growth
+        #    [2] hazards edge stability
+        #    [3] appearance of holes in solid hazards (this allows the Yeti
+        #        to work his way through forests)
+        self.prob_tree = [0.0, 30.0, 70.0, 90.0]
+        self.prob_ice = [0.0, 30.0, 70.0, 90.0]
+        self.prob_ground = [0.0, 30.0, 70.0, 90.0]
+
+	self.level_num = 0
+	self.player_pos = LINE_LEN / 2
+	self.yeti = None
+	self.icbm_pos = None
+	self.demon_pos = None
+	self.slope = [REP_SNOW] * LINE_LEN
+
+        # Initialize the player's position.
+        self.player_pos = random.choice(range(LINE_LEN))
+
+        # Randomize the appearance probabilities.
+        self.prob_tree[0] = (random.randint(0, 99)) / 500.0 + 0.05
+        self.prob_ice[0] = (random.randint(0, 99)) / 500.0 + 0.05
+        self.prob_ground[0] = (random.randint(0, 99)) / 500.0 + 0.05
+        self.prob_yeti_appearance = (random.randint(0, 99)) / 25.0 + 1.0
+
+    def terrain(self):
+        "What kind of terrain are we on?"
+        return self.slope[self.player_pos]
+
+    def nearby(self, pos, min=1):
+        "Is the specified position near enough to the player?"
+        return exists(pos) and abs(pos - self.player_pos) <= min        
+
+    def gen_next_slope(self, next_level):
+        # Generates the slope of the next level, dependent upon
+        # the characteristics of the current level, the probabilities, and the
+        # position of the player.
+
+        # Stash away old state so we don't step on it while generating new
+        current_slope = copy.copy(self.slope)
+
+        # Generate each character of the next level.
+        for i in range(LINE_LEN):
+            # Count the number of nearby trees, ice patches, and
+            # ground patches on the current level.
+            num_nearby_trees = 0
+            num_nearby_ice = 0
+            num_nearby_ground = 0
+
+            if current_slope[i] == REP_TREE:
+                num_nearby_trees += 1
+            if current_slope[i] == REP_ICE:
+                num_nearby_ice += 1
+            if current_slope[i] == REP_GROUND:
+                num_nearby_ground += 1
+
+            if i > 0:
+                if current_slope[i - 1] == REP_TREE:
+                    num_nearby_trees += 1
+                elif current_slope[i - 1] == REP_ICE:
+                    num_nearby_ice += 1
+                elif current_slope[i - 1] == REP_GROUND:
+                    num_nearby_ground += 1
+
+            if i < LINE_LEN - 1:
+                if current_slope[i + 1] == REP_TREE:
+                    num_nearby_trees += 1
+                elif current_slope[i + 1] == REP_ICE:
+                    num_nearby_ice += 1
+                elif current_slope[i + 1] == REP_GROUND:
+                    num_nearby_ground += 1
+
+            # Generate this character of the next level based upon
+            # the characteristics of the nearby characters on the
+            # current level.
+            if prob(self.prob_tree[num_nearby_trees]) and \
+                   ((i != self.player_pos) or (num_nearby_trees > 0)):
+                self.slope[i] = REP_TREE
+            elif prob(self.prob_ice[num_nearby_ice]) and \
+                 ((i != self.player_pos) or (num_nearby_ice > 0)):
+                self.slope[i] = REP_ICE
+            elif prob(self.prob_ground[num_nearby_ground]) and \
+                 ((i != self.player_pos) or (num_nearby_ground > 0)):
+                self.slope[i] = REP_GROUND
+            else:
+                self.slope[i] = REP_SNOW
+
+    def update_level(self, player):
+        # Go to the next level, and move the player.
+        self.level_num += 1
+
+        # Figure out the new player position based on a modulo
+        # addition.  Note that we must add the line length into the
+        # expression before taking the modulus to make sure that we
+        # are not taking the modulus of a negative integer.
+        self.player_pos = (self.player_pos +
+                        player.player_speed + LINE_LEN) % LINE_LEN
+
+        # Generate the updated slope.
+        self.gen_next_slope(self)
+
+        # If there is no Yeti, one might be created.
+        if not exists(self.yeti) and prob(self.prob_yeti_appearance):
+            # Make sure that the Yeti does not appear too
+            # close to the player.
+            while True:
+                self.yeti = random.randint(0, LINE_LEN-1)
+                if not self.nearby(self.yeti,MIN_YETI_APPEARANCE_DISTANCE):
+                    break
+
+        # Increase the initial appearance probabilities of all obstacles and
+        # the Yeti.
+        self.prob_tree[0] *= LEVEL_MULTIPLIER
+        self.prob_ice[0] *= LEVEL_MULTIPLIER
+        self.prob_ground[0] *= LEVEL_MULTIPLIER
+        self.prob_yeti_appearance *= LEVEL_MULTIPLIER
+
+    def manipulate_objects(self, player):
+	# If there is a Yeti, the player's jet-powered skis may melt him,
+	# or he may spontaneously melt. Otherwise move him towards the player.
+        # If there is a	tree in the way, the Yeti is blocked.
+        if exists(self.yeti):
+            if (self.nearby(self.yeti) and prob(PROB_SKIS_MELT_YETI)) \
+            		or prob(PROB_SPONTANEOUS_MELT):
+                self.yeti = None
+                player.num_snomen_melted += 1
+
+        if exists(self.yeti):
+            if self.yeti < self.player_pos:
+    		if self.slope[self.yeti + 1] != REP_TREE:
+                    self.yeti += 1
+            else:
+                if self.slope[self.yeti - 1] != REP_TREE:
+                    self.yeti -= 1
+
+	# If there is an ICBM, handle it.
+        if exists(self.icbm_pos):
+            # If there is a Yeti, move the ICBM towards him.  Else,
+            # self-destruct the ICBM.
+            if exists(self.yeti):
+                if self.icbm_pos < self.yeti:
+                    self.icbm_pos += ICBM_SPEED
+                else:
+                    self.icbm_pos -= ICBM_SPEED
+            else:
+                self.icbm_pos = None
+
+	# If there is a fire demon on the level, handle it.
+        if exists(self.demon_pos):
+            # If there is a Yeti on the current level, move the demon
+            # towards him.  Else, the demon might decide to leave.
+            if exists(self.yeti):
+                if self.demon_pos < self.yeti:
+                    self.demon_pos += DEMON_SPEED
+                else:
+                    self.demon_pos -= DEMON_SPEED
+            else:
+                if prob(25.0):
+                    self.demon_pos = None
+
+	# If there is a Yeti and an ICBM on the slope, the Yeti
+	# might get melted.
+        if exists(self.yeti) and exists(self.icbm_pos):
+            if abs(self.yeti - self.icbm_pos) <= ICBM_RANGE:
+                self.icbm_pos = None
+                self.yeti = None
+                player.num_snomen_melted += 1
+
+	# If there is a Yeti and a fire demon, he might get melted.
+	if exists(self.yeti) and exists(self.demon_pos):
+            if abs(self.yeti - self.demon_pos) <= 1:
+                self.yeti = None
+                player.num_snomen_melted += 1
+
+    def __repr__(self):
+	"Create a picture of the current level."
+        picture = copy.copy(self.slope)
+        picture[self.player_pos] = REP_PLAYER
+        if exists(self.yeti):
+            picture[self.yeti] = REP_YETI
+        if exists(self.demon_pos):
+            picture[self.demon_pos] = REP_DEMON
+        if exists(self.icbm_pos):
+            picture[self.icbm_pos] = REP_ICBM
+        picture = colorize(picture)
+	return "%4d %s" % (self.level_num, "".join(picture))
+
+class SkiPlayer:
+    injuries = (
+	"However, you escaped injury!", 
+	"But you weren't hurt at all!", 
+	"But you only got a few scratches.", 
+	"You received some cuts and bruises.", 
+	"You wind up with a concussion and some contusions.", 
+	"You now have a broken rib.", 
+	"Your left arm has been fractured.",
+	"You suffered a broken ankle.",
+	"You have a broken arm and a broken leg.", 
+	"You have four broken limbs and a cut!", 
+	"You broke every bone in your body!", 
+	"I'm sorry to tell you that you have been killed....")
+
+    def __init__(self):
+	self.jump_count = -1
+	self.num_snomen_melted = 0
+	self.num_jumps_attempted = 0.0
+	self.player_speed = 0
+	self.meters_travelled = 0
+
+    def __accident(self, msg, severity):
+        # "__accident" is called when the player gets into an __accident,
+        # which ends the game.  "msg" is the description of the
+        # __accident type, and "severity" is the severity.  This
+        # function should never return.
+        # Compute the degree of the player's injuries.
+        degree = severity + random.randint(0, INJURY_RANDOMNESS - 1)
+
+        # Print a message indicating the termination of the game.
+        print "!\n\n%s  %s\n" % (msg, SkiPlayer.injuries[degree])
+
+        # Print the statistics of the game.
+        print "You skiied %d meters with %d jumps and melted %d %s."%(\
+                        self.meters_travelled,
+                        self.num_jumps_attempted,
+                        self.num_snomen_melted,
+                        ("Yeti", "Yetis")[self.num_snomen_melted != 1])
+
+        # Initially calculate the player's score based upon the number of
+        # meters travelled.
+        score = self.meters_travelled * POINTS_PER_METER
+
+        # Add bonus points for the number of jumps completed.
+        score += self.num_jumps_attempted * POINTS_PER_JUMP
+
+        # Add bonus points for each Yeti that melted during the course of
+        # the game.
+        score += self.num_snomen_melted * POINTS_PER_MELTED_YETI
+
+        # Subtract a penalty for the degree of injury experienced by the
+        # player.
+        score += degree * POINTS_PER_INJURY_DEGREE
+
+        # Print the player's score.
+        print "Your score for this run is %ld." % score
+
+        # Exit the game with a code indicating successful completion.
+        sys.exit(0)
+
+    def check_obstacles(self, world):
+	# If we are just landing after a jump, we might fall down.
+        if (self.jump_count == 0) and prob(PROB_BAD_LANDING):
+            self.__accident("Whoops!  A bad landing!", LIGHT_INJURY)
+
+	# If there is a tree in our position, we might hit it.
+        if (world.terrain() == REP_TREE) and prob(PROB_HIT_TREE):
+            self.__accident("Oh no!  You hit a tree!", SEVERE_INJURY)
+
+	# If there is bare ground under us, we might fall down.
+        if (world.terrain() == REP_GROUND) and prob(PROB_FALL_ON_GROUND):
+            self.__accident("You fell on the ground!", MODERATE_INJURY)
+
+	# If we are on ice, we might slip.
+        if (world.terrain() == REP_ICE) and prob(PROB_SLIP_ON_ICE):
+            self.__accident("Oops!  You slipped on the ice!",SLIGHT_INJURY)
+
+	# If there is a Yeti next to us, he may grab us.
+        if world.nearby(world.yeti):
+            self.__accident("Yikes!  The Yeti's got you!",MODERATE_INJURY)
+
+
+    def update_player(self):
+        "Update state of player for current move."
+        self.meters_travelled += abs(self.player_speed) + 1
+        # If the player was jumping, decrement the jump count.
+        if player.jump_count >= 0:
+            player.jump_count -= 1
+
+
+    def do_command(self, world):
+	# Print a prompt, and read a command.
+        while True:
+            cmdline = raw_input("? ")
+            if cmdline == "":
+                cmdline = "\n"
+            cmd = cmdline[0].upper()
+
+            if cmd == '?':
+                print __doc__ % version, terrain_key
+                sys.stdout.write(`world`)
+                continue
+            elif cmd == '!':
+                os.system(cmdline + 1)
+                sys.stdout.write(`world`)
+                continue
+            elif cmd == 'R': 	# Move right
+		if ((world.terrain() != REP_ICE) and \
+                    (self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED)):
+			self.player_speed += 1
+		break
+            elif cmd == 'L':	# Move left
+		if ((world.terrain() != REP_ICE) and \
+                    (self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED)):
+			self.player_speed -= 1
+		break
+            elif cmd == 'J':	# Jump
+		self.jump_count = random.randint(0, 5) + 4
+		self.num_jumps_attempted += 1.0
+		break
+            elif cmd == 'H':	# Do a hop
+		self.jump_count = random.randint(0, 2) + 2
+		self.num_jumps_attempted += 0.5
+		break
+            elif cmd == 'T':	# Attempt teleportation
+                if prob(PROB_BAD_TELEPORT):
+                    self.__accident("You materialized 25 feet in the air!",
+                                  SLIGHT_INJURY)
+		world.player_pos = random.randint(0, LINE_LEN-1)
+		break
+            elif cmd == 'I':	# Launch backpack ICBM
+                if prob(PROB_BAD_ICBM):
+                    self.__accident("Nuclear blast in your backpack!", SEVERE_INJURY)
+                world.icbm_pos = world.player_pos
+		break
+
+            elif cmd == 'D':	# Incant spell for fire demon
+                if prob(PROB_BAD_SPELL):
+                    self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
+
+		world.demon_pos = random.randint(0, LINE_LEN-1)
+		break
+            else:
+		break
+
+    def do_user(self, world):
+	# If we are jumping, just finish the line.  Otherwise, check for
+	# obstacles, and do a command.
+        if self.jump_count >= 0:
+            sys.stdout.write('\n')
+	else:
+            self.check_obstacles(world)
+            self.do_command(world)
+
+def colorize(picture):
+    "Colorize specual characters in a string"
+    for i in range(len(picture)):
+        if (i == 0 or (picture[i] != picture[i-1][-1])) and picture[i] in colordict:
+            picture[i] = colordict[picture[i]] + picture[i]
+    picture += reset
+    return picture
+
+# Main sequence 
+if __name__ == "__main__":
+    # Initialize the random number generator.
+    random.seed(time.time())
+
+    # Arrange for color to be available
+    curses.setupterm()
+    color = curses.tigetstr("setaf")
+    for (ch, idx) in colordict.items():
+        if color:
+            colordict[ch] = curses.tparm(color, idx)
+        else:
+            colordict[ch] = ""
+    reset = curses.tigetstr("sgr0") or ""
+
+    print "SKI!  Version 6.1.  Type ? for help.\n"
+    world = SkiWorld()
+    player = SkiPlayer()
+
+    # Perform the game loop until the game is over.
+    try:
+        while True:
+            sys.stdout.write(`world`)
+            player.do_user(world)
+            world.manipulate_objects(player)
+            world.update_level(player)
+            player.update_player()
+    except (KeyboardInterrupt, EOFError):
+        print "\nBye!"
+
+# end
+
+
+
