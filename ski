@@ -104,7 +104,7 @@ colordict = {
     REP_DEMON	: curses.COLOR_RED
     }
 
-def prob(X):
+def percent(X):
     return (random.randint(0, 9999) / 100.0) <= (X)
 def exists(X):
     return X != None
@@ -194,13 +194,13 @@ class SkiWorld:
             # Generate this character of the next level based upon
             # the characteristics of the nearby characters on the
             # current level.
-            if prob(self.prob_tree[num_nearby_trees]) and \
+            if percent(self.prob_tree[num_nearby_trees]) and \
                    ((i != self.player_pos) or (num_nearby_trees > 0)):
                 self.slope[i] = REP_TREE
-            elif prob(self.prob_ice[num_nearby_ice]) and \
+            elif percent(self.prob_ice[num_nearby_ice]) and \
                  ((i != self.player_pos) or (num_nearby_ice > 0)):
                 self.slope[i] = REP_ICE
-            elif prob(self.prob_ground[num_nearby_ground]) and \
+            elif percent(self.prob_ground[num_nearby_ground]) and \
                  ((i != self.player_pos) or (num_nearby_ground > 0)):
                 self.slope[i] = REP_GROUND
             else:
@@ -221,7 +221,7 @@ class SkiWorld:
         self.gen_next_slope(self)
 
         # If there is no Yeti, one might be created.
-        if not exists(self.yeti) and prob(self.prob_yeti_appearance):
+        if not exists(self.yeti) and percent(self.prob_yeti_appearance):
             # Make sure that the Yeti does not appear too
             # close to the player.
             while True:
@@ -241,8 +241,8 @@ class SkiWorld:
 	# or he may spontaneously melt. Otherwise move him towards the player.
         # If there is a	tree in the way, the Yeti is blocked.
         if exists(self.yeti):
-            if (self.nearby(self.yeti) and prob(PROB_SKIS_MELT_YETI)) \
-            		or prob(PROB_YETI_MELT):
+            if (self.nearby(self.yeti) and percent(PROB_SKIS_MELT_YETI)) \
+            		or percent(PROB_YETI_MELT):
                 self.yeti = None
                 player.num_snomen_melted += 1
 
@@ -276,7 +276,7 @@ class SkiWorld:
                 else:
                     self.demon_pos -= DEMON_SPEED
             else:
-                if prob(25.0):
+                if percent(25.0):
                     self.demon_pos = None
 
 	# If there is a Yeti and an ICBM on the slope, the Yeti
@@ -373,19 +373,19 @@ class SkiPlayer:
 
     def check_obstacles(self, world):
 	# If we are just landing after a jump, we might fall down.
-        if (self.jump_count == 0) and prob(PROB_BAD_LANDING):
+        if (self.jump_count == 0) and percent(PROB_BAD_LANDING):
             self.__accident("Whoops!  A bad landing!", LIGHT_INJURY)
 
 	# If there is a tree in our position, we might hit it.
-        if (world.terrain() == REP_TREE) and prob(PROB_HIT_TREE):
+        if (world.terrain() == REP_TREE) and percent(PROB_HIT_TREE):
             self.__accident("Oh no!  You hit a tree!", SEVERE_INJURY)
 
 	# If there is bare ground under us, we might fall down.
-        if (world.terrain() == REP_GROUND) and prob(PROB_FALL_ON_GROUND):
+        if (world.terrain() == REP_GROUND) and percent(PROB_FALL_ON_GROUND):
             self.__accident("You fell on the ground!", MODERATE_INJURY)
 
 	# If we are on ice, we might slip.
-        if (world.terrain() == REP_ICE) and prob(PROB_SLIP_ON_ICE):
+        if (world.terrain() == REP_ICE) and percent(PROB_SLIP_ON_ICE):
             self.__accident("Oops!  You slipped on the ice!",SLIGHT_INJURY)
 
 	# If there is a Yeti next to us, he may grab us.
@@ -436,19 +436,19 @@ class SkiPlayer:
 		self.num_jumps_attempted += 0.5
 		break
             elif cmd == 'T':	# Attempt teleportation
-                if prob(PROB_BAD_TELEPORT):
+                if percent(PROB_BAD_TELEPORT):
                     self.__accident("You materialized 25 feet in the air!",
                                   SLIGHT_INJURY)
 		world.player_pos = self.teleport()
 		break
             elif cmd == 'I':	# Launch backpack ICBM
-                if prob(PROB_BAD_ICBM):
+                if percent(PROB_BAD_ICBM):
                     self.__accident("Nuclear blast in your backpack!", SEVERE_INJURY)
                 world.icbm_pos = world.player_pos
 		break
 
             elif cmd == 'D':	# Incant spell for fire demon
-                if prob(PROB_BAD_SPELL):
+                if percent(PROB_BAD_SPELL):
                     self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
 
 		world.demon_pos = world.teleport()
