@@ -33,7 +33,7 @@ Fire Demon.  And since the hazards occur in patches, you can skillfully
 out-maneuver them.</para>
 
 <para>You ski until something bad happens to you.  Your final score is based on
-how far you have skiied, how many jumps you made, how many Snomen have melted
+how far you have skiied, how many jumps you made, how many Yetis have melted
 during your run, and how healthy you are when are finished.</para>
 
 <para>These characters represent the things that you see on the slope
@@ -111,7 +111,7 @@ a return to do nothing this turn.</para>
 
 <variablelist remap='IP'>
   <varlistentry>
-  <term>R</term>
+  <term>r</term>
   <listitem>
 <para>Turn to the right.  If you were going straight down, this will
 make you go one space to the right every turn.  If you type "R" again,
@@ -125,14 +125,14 @@ than five spaces per turn.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term>L</term>
+  <term>l</term>
   <listitem>
 <para>Turn left.  Exactly the same as turning right, but totally
 opposite.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term>J</term>
+  <term>j</term>
   <listitem>
 <para>Jump.  When jumping, you don't have the "?" on the right for each
 line you jump over, so you can't enter a command for it.  You can't
@@ -145,13 +145,13 @@ skis may melt the Yeti while you're jumping over him.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term>H</term>
+  <term>h</term>
   <listitem>
 <para>Hop.  A hop is half a jump.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term>T</term>
+  <term>t</term>
   <listitem>
 <para>Teleport through hyperspace.  This transports you to somewhere
 else on the slope, but you might materialize way up in the air and
@@ -159,7 +159,7 @@ fall down.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term>I</term>
+  <term>i</term>
   <listitem>
 <para>Launch ICBM with nuclear warhead.  If your backpack is working well,
 an ICBM will be launched from it towards the Yeti, travelling at
@@ -169,7 +169,7 @@ lock on the Yeti, it self-destructs.</para>
   </listitem>
   </varlistentry>
   <varlistentry>
-  <term>D</term>
+  <term>d</term>
   <listitem>
 <para>Cast spell to summon the Fire Demon to this material plane.  If
 the alternate universes are in a synchronous phase, the Fire Demon
@@ -200,18 +200,13 @@ slope exactly where you were before.</para>
   </varlistentry>
 </variablelist>
 
-<!-- Correspondence: resumix!stevans@decwrl.dec.com -->
-
 <para>Good luck, and happy skiing!</para>
 </refsect1>
 
 <refsect1 id='author'><title>AUTHOR</title>
-<para>Mark Stevans, for Roy's Games, Inc.
-Color support and the invisible shell monster by Eric S. Raymond
+<para>Mark Stevans, for Roy's Games, Inc.  Python implementation,
+color support and the invisible shell monster by Eric S. Raymond
 <email>esr@thyrsus.com</email>.</para>
-
-<para>This document describes <application>Ski!</application> Version
-6.2 of December, 2003 (modified for color support by ESR).</para>
 </refsect1>
 
 <refsect1 id='diagnostics'><title>DIAGNOSTICS</title>
