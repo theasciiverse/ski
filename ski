@@ -13,7 +13,7 @@ Available commands are:
  ? = print this help message.
 
 """
-version='6.2'
+version='6.4'
 import time, random, curses, copy, sys, os
 
 REP_SNOW	= '.'
