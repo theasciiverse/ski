@@ -1,13 +1,4 @@
 #!/usr/bin/env python
-#                                  S K I !
-#
-# Version 6.0 of October 14, 1990
-# Copyright 1983-1990 by Mark Stevans for Roy's Games, Inc.
-#
-# Version 6.1 of December 30 2003
-# Rewritten in Python
-# Copright 2003 by Eric S. Raymond
-#
 """\
 This is ski %s, designed by Mark Stevans, ported by Eric S. Raymond.
 You are hurtling down a ski slope in reverse, trying to evade the Yeti.
@@ -165,11 +156,11 @@ class SkiWorld:
         self.prob_ground = [0.0, 30.0, 70.0, 90.0]
 
 	self.level_num = 0
-	self.player_pos = random.choice(range(LINE_LEN))
+	self.slope = [REP_SNOW] * LINE_LEN
+	self.player_pos = self.teleport()
 	self.yeti = None
 	self.icbm_pos = None
 	self.demon_pos = None
-	self.slope = [REP_SNOW] * LINE_LEN
 
         # Randomize the appearance probabilities.
         self.prob_tree[0] = (random.randint(0, 99)) / 500.0 + 0.05
@@ -185,6 +176,10 @@ class SkiWorld:
         "Is the specified position near enough to the player?"
         return exists(pos) and abs(pos - self.player_pos) <= min        
 
+    def teleport(self):
+        "Return a erandom location"
+        return random.choice(range(len(self.slope)))
+
     def gen_next_slope(self, next_level):
         # Generates the slope of the next level, dependent upon
         # the characteristics of the current level, the probabilities, and the
@@ -194,7 +189,7 @@ class SkiWorld:
         current_slope = copy.copy(self.slope)
 
         # Generate each character of the next level.
-        for i in range(LINE_LEN):
+        for i in range(len(self.slope)):
             # Count the number of nearby trees, ice patches, and
             # ground patches on the current level.
             num_nearby_trees = 0
@@ -216,7 +211,7 @@ class SkiWorld:
                 elif current_slope[i - 1] == REP_GROUND:
                     num_nearby_ground += 1
 
-            if i < LINE_LEN - 1:
+            if i < len(self.slope) - 1:
                 if current_slope[i + 1] == REP_TREE:
                     num_nearby_trees += 1
                 elif current_slope[i + 1] == REP_ICE:
@@ -248,7 +243,7 @@ class SkiWorld:
         # expression before taking the modulus to make sure that we
         # are not taking the modulus of a negative integer.
         self.player_pos = (self.player_pos +
-                        player.player_speed + LINE_LEN) % LINE_LEN
+                        player.player_speed + len(self.slope)) % len(self.slope)
 
         # Generate the updated slope.
         self.gen_next_slope(self)
@@ -258,7 +253,7 @@ class SkiWorld:
             # Make sure that the Yeti does not appear too
             # close to the player.
             while True:
-                self.yeti = random.randint(0, LINE_LEN-1)
+                self.yeti = self.teleport()
                 if not self.nearby(self.yeti,MIN_YETI_APPEARANCE_DISTANCE):
                     break
 
@@ -472,7 +467,7 @@ class SkiPlayer:
                 if prob(PROB_BAD_TELEPORT):
                     self.__accident("You materialized 25 feet in the air!",
                                   SLIGHT_INJURY)
-		world.player_pos = random.randint(0, LINE_LEN-1)
+		world.player_pos = self.teleport()
 		break
             elif cmd == 'I':	# Launch backpack ICBM
                 if prob(PROB_BAD_ICBM):
@@ -484,7 +479,7 @@ class SkiPlayer:
                 if prob(PROB_BAD_SPELL):
                     self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
 
-		world.demon_pos = random.randint(0, LINE_LEN-1)
+		world.demon_pos = self.teleport()
 		break
             else:
 		break
