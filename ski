@@ -400,11 +400,9 @@ class SkiPlayer:
         if player.jump_count >= 0:
             player.jump_count -= 1
 
-
-    def do_command(self, world):
+    def do_command(self, world, cmdline):
 	# Print a prompt, and read a command.
         while True:
-            cmdline = raw_input("? ")
             if cmdline == "":
                 cmdline = "\n"
             cmd = cmdline[0].upper()
@@ -456,15 +454,6 @@ class SkiPlayer:
             else:
 		break
 
-    def do_user(self, world):
-	# If we are jumping, just finish the line.  Otherwise, check for
-	# obstacles, and do a command.
-        if self.jump_count >= 0:
-            sys.stdout.write('\n')
-	else:
-            self.check_obstacles(world)
-            self.do_command(world)
-
 def colorize(picture):
     "Colorize special characters in a display list."
     for i in range(len(picture)):
@@ -500,7 +489,13 @@ if __name__ == "__main__":
     try:
         while True:
             sys.stdout.write(`world`)
-            player.do_user(world)
+            # If we are jumping, just finish the line.  Otherwise, check for
+            # obstacles, and do a command.
+            if player.jump_count >= 0:
+                sys.stdout.write('\n')
+            else:
+                player.check_obstacles(world)
+                player.do_command(world, raw_input("? "))
             world.manipulate_objects(player)
             world.update_level(player)
             player.update_player()
