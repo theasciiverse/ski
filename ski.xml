@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                    "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 <!-- lifted from troff+man by doclifter -->
-<refentry id='ski6'>
+<refentry id='ski.6'>
 <refmeta>
 <refentrytitle>SKI</refentrytitle>
 <manvolnum>6</manvolnum>
@@ -107,7 +107,9 @@ call him a bad name and he gets mad at you.</para>
 
 <para>These are your commands.  You can type any one of these letters
 when you have the "?" prompt on the end of the slope line, or just hit
-a return to do nothing this turn.</para>
+a return to do nothing this turn.  Preceding any command with a number
+does that command repeatedly; thus, for example, <quote>4l</quote> is
+<quote>turn left 4 times</quote>.</para>
 
 <variablelist remap='IP'>
   <varlistentry>
