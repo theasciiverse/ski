@@ -401,55 +401,51 @@ class SkiPlayer:
             player.jump_count -= 1
 
     def do_command(self, world, cmdline):
-	# Print a prompt, and read a command.
-        while True:
-            cmd = cmdline[0].upper()
-            if cmd == '?':
-                print __doc__ % version, terrain_key
-                sys.stdout.write(`world`)
-                continue
-            elif cmd == '!':
-                os.system(cmdline[1:])
-                sys.stdout.write(`world`)
-                continue
-            elif cmd == 'R': 	# Move right
-		if ((world.terrain() != REP_ICE) and \
-                    (self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED)):
-			self.player_speed += 1
-		break
-            elif cmd == 'L':	# Move left
-		if ((world.terrain() != REP_ICE) and \
-                    (self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED)):
-			self.player_speed -= 1
-		break
-            elif cmd == 'J':	# Jump
-		self.jump_count = random.randint(0, 5) + 4
-		self.num_jumps_attempted += 1.0
-		break
-            elif cmd == 'H':	# Do a hop
-		self.jump_count = random.randint(0, 2) + 2
-		self.num_jumps_attempted += 0.5
-		break
-            elif cmd == 'T':	# Attempt teleportation
-                if percent(PROB_BAD_TELEPORT):
-                    self.__accident("You materialized 25 feet in the air!",
-                                  SLIGHT_INJURY)
-		world.player_pos = world.teleport()
-		break
-            elif cmd == 'I':	# Launch backpack ICBM
-                if percent(PROB_BAD_ICBM):
-                    self.__accident("Nuclear blast in your backpack!", SEVERE_INJURY)
-                world.icbm_pos = world.player_pos
-		break
-
-            elif cmd == 'D':	# Incant spell for fire demon
-                if percent(PROB_BAD_SPELL):
-                    self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
-
-		world.demon_pos = world.teleport()
-		break
-            else:
-		break
+	# Print a prompt, and read a command.  Return True to advance game.
+        cmd = cmdline[0].upper()
+        if cmd == '?':
+            print __doc__ % version, terrain_key
+            return False
+        elif cmd == '!':
+            os.system(cmdline[1:])
+            return False
+        elif cmd == 'R': 	# Move right
+            if ((world.terrain() != REP_ICE) and \
+                (self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED)):
+                    self.player_speed += 1
+            return True
+        elif cmd == 'L':	# Move left
+            if ((world.terrain() != REP_ICE) and \
+                (self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED)):
+                    self.player_speed -= 1
+            return True
+        elif cmd == 'J':	# Jump
+            self.jump_count = random.randint(0, 5) + 4
+            self.num_jumps_attempted += 1.0
+            return True
+        elif cmd == 'H':	# Do a hop
+            self.jump_count = random.randint(0, 2) + 2
+            self.num_jumps_attempted += 0.5
+            return True
+        elif cmd == 'T':	# Attempt teleportation
+            if percent(PROB_BAD_TELEPORT):
+                self.__accident("You materialized 25 feet in the air!",
+                              SLIGHT_INJURY)
+            world.player_pos = world.teleport()
+            return True
+        elif cmd == 'I':	# Launch backpack ICBM
+            if percent(PROB_BAD_ICBM):
+                self.__accident("Nuclear blast in your backpack!", SEVERE_INJURY)
+            world.icbm_pos = world.player_pos
+            return True
+        elif cmd == 'D':	# Incant spell for fire demon
+            if percent(PROB_BAD_SPELL):
+                self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
+            world.demon_pos = world.teleport()
+            return True
+        else:
+            # Any other command just advances
+            return True
 
 def colorize(picture):
     "Colorize special characters in a display list."
@@ -508,7 +504,8 @@ if __name__ == "__main__":
                         else:
                             repeat = int(cmd[:-1])
                             cmd = cmd[-1]
-                player.do_command(world, cmd)
+                if not player.do_command(world, cmd):
+                    continue
             world.manipulate_objects(player)
             world.update_level(player)
             player.update_player()
