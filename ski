@@ -397,6 +397,10 @@ class SkiPlayer:
         # player.
         score += degree * POINTS_PER_INJURY_DEGREE
 
+        # Negative scores are just too silly.
+        if score < 0:
+            score = 0
+
         # Print the player's score.
         print "Your score for this run is %ld." % score
 
@@ -533,6 +537,7 @@ if __name__ == "__main__":
             world.update_level(player)
             player.update_player()
     except (KeyboardInterrupt, EOFError):
+        sys.stdout.write(reset)
         print "\nBye!"
 
 # end
