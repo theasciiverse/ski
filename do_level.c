@@ -60,7 +60,7 @@ void init_colors()
     int		i;
 
     tgetent(getenv("TERM"), (char *)NULL);
-    if ((cp = tgetstr("Sf")) != (char *)NULL)
+    if ((cp = tigetstr("setaf")) != (char *)NULL)
     {
 	/* wedge those color strings in there */
 	for (i = 0; i < MAXCOLORS; i++)
