@@ -1,5 +1,5 @@
 Name: ski
-Version: 6.4
+Version: 6.5
 Release: 1
 URL: http://www.catb.org/~esr/ski/
 Source0: %{name}-%{version}.tar.gz
@@ -44,6 +44,9 @@ cp ski.6 "$RPM_BUILD_ROOT"%{_mandir}/man6/
 %{_bindir}/ski
 
 %changelog
+* Mon Jan 12 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.5-1
+- 6.4 introduced a bug into the ? and ! commands, now fixed.
+
 * Sun Jan 11 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.4-1
 - Game commands now accept numeric repeat prefixes.
 
