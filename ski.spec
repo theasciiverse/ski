@@ -1,5 +1,5 @@
 Name: ski
-Version: 6.3
+Version: 6.4
 Release: 1
 URL: http://www.catb.org/~esr/ski/
 Source0: %{name}-%{version}.tar.gz
@@ -7,6 +7,8 @@ License: GPL
 Group: Games
 Summary: a hotdogging game, evade the deadly Yeti on your jet-powered skis
 BuildRoot: %{_tmppath}/%{name}-root
+BuildArch: noarch
+#Keywords: game, solitaire
 
 %description
 Imagine you are skiing down an infinite slope, facing such hazards as
@@ -23,7 +25,7 @@ you don't need fancy graphical user interfaces to have a good time.
 %setup -q
 
 %build
-make ski.6
+make %{?_smp_mflags} ski.6
 
 %install
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
@@ -42,6 +44,9 @@ cp ski.6 "$RPM_BUILD_ROOT"%{_mandir}/man6/
 %{_bindir}/ski
 
 %changelog
+* Sun Jan 11 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.4-1
+- Game commands now accept numeric repeat prefixes.
+
 * Sat Jan  3 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.3-1
 - Fix bug introduced to teleport command in 6.2.
 

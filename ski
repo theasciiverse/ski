@@ -403,10 +403,7 @@ class SkiPlayer:
     def do_command(self, world, cmdline):
 	# Print a prompt, and read a command.
         while True:
-            if cmdline == "":
-                cmdline = "\n"
             cmd = cmdline[0].upper()
-
             if cmd == '?':
                 print __doc__ % version, terrain_key
                 sys.stdout.write(`world`)
@@ -487,6 +484,7 @@ if __name__ == "__main__":
 
     # Perform the game loop until the game is over.
     try:
+        repeat = 1
         while True:
             sys.stdout.write(`world`)
             # If we are jumping, just finish the line.  Otherwise, check for
@@ -495,7 +493,22 @@ if __name__ == "__main__":
                 sys.stdout.write('\n')
             else:
                 player.check_obstacles(world)
-                player.do_command(world, raw_input("? "))
+                if repeat:
+                    repeat -= 1
+                if repeat:
+                    sys.stdout.write('\n')
+                else:
+                    cmd = raw_input("? ")
+                    if cmd == '':
+                        cmd = '\n'
+                    elif cmd[0] in "0123456789":
+                        if cmd[-1] in "0123456789":
+                            repeat = int(cmd)
+                            cmd = '\n'
+                        else:
+                            repeat = int(cmd[:-1])
+                            cmd = cmd[-1]
+                player.do_command(world, cmd)
             world.manipulate_objects(player)
             world.update_level(player)
             player.update_player()
