@@ -17,6 +17,8 @@ Available commands are:
  j = jump                 h = hop
  t = teleport             Enter = keep skiing
  i = launch ICBM          d = summon Fire Demon
+ ! = interpret line as shell command and execute.
+
 """
 version='6.1'
 import time, random, curses, copy, sys, os
@@ -30,13 +32,25 @@ REP_YETI	= 'A'
 REP_ICBM	= '*'
 REP_DEMON	= 'D'
 
-terrain_key = """
-Terrain types:   %s = snow      %s = tree  %s = bare ground     %s = ice
-Creatures:       %s = player    %s = yeti  %s = ICBM            %s = fire demon
-""" \
-% (REP_SNOW, REP_TREE, REP_GROUND, \
-   REP_ICE, REP_PLAYER, REP_YETI, \
-   REP_ICBM, REP_DEMON) 
+terrain_key = [
+"Terrain types:   ",
+REP_SNOW,
+" = snow      ",
+REP_TREE, 
+" = tree  ",
+REP_GROUND,
+" = bare ground     ",
+REP_ICE,
+" = ice\n\
+Creatures:       ",
+REP_PLAYER, 
+" = player    ",
+REP_YETI,
+" = yeti  ",
+REP_ICBM,
+" = ICBM            ",
+REP_DEMON,
+" = fire demon"]
 
 # Length of line
 LINE_LEN = 70
@@ -340,7 +354,7 @@ class SkiWorld:
         if exists(self.icbm_pos):
             picture[self.icbm_pos] = REP_ICBM
         picture = colorize(picture)
-	return "%4d %s" % (self.level_num, "".join(picture))
+	return "%4d %s" % (self.level_num, picture)
 
 class SkiPlayer:
     injuries = (
@@ -502,12 +516,15 @@ class SkiPlayer:
             self.do_command(world)
 
 def colorize(picture):
-    "Colorize specual characters in a string"
+    "Colorize special characters in a display list."
     for i in range(len(picture)):
-        if (i == 0 or (picture[i] != picture[i-1][-1])) and picture[i] in colordict:
-            picture[i] = colordict[picture[i]] + picture[i]
+        if (i == 0 or (picture[i] != picture[i-1][-1])):
+            if picture[i] in colordict:
+                picture[i] = colordict[picture[i]] + picture[i]
+            else:
+                picture[i] = reset + picture[i]
     picture += reset
-    return picture
+    return "".join(picture)
 
 # Main sequence 
 if __name__ == "__main__":
@@ -523,6 +540,7 @@ if __name__ == "__main__":
         else:
             colordict[ch] = ""
     reset = curses.tigetstr("sgr0") or ""
+    terrain_key = colorize(terrain_key)
 
     print "SKI!  Version 6.1.  Type ? for help.\n"
     world = SkiWorld()
