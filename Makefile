@@ -25,4 +25,4 @@ ski-$(VERS).tar.gz: $(SOURCES)
 dist: ski-$(VERS).tar.gz
 
 release: ski-$(VERS).tar.gz ski.html
-	shipper -f; rm -f CHANGES ANNOUNCE* *.6 *.html *.rpm *.lsm
+	shipper -f; rm -f CHANGES ANNOUNCE* *.6 *.html *.rpm *.lsm MANIFEST
