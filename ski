@@ -50,49 +50,21 @@ LEVEL_MULTIPLIER = 1.01
 # Absolute value of maximum horizontal player speed.
 MAX_HORIZONTAL_PLAYER_SPEED = 5
 
-# Probability that the player's jet-powered skis will melt the Yeti
-# during each turn in which the player is jumping over the Yeti.
-PROB_SKIS_MELT_YETI = 20.0
+ICBM_SPEED	= 3	# Horizontal speed of an ICBM.
+ICBM_RANGE	= 2	# Horizontal Yeti lethality range of the ICBM.
+DEMON_RANGE	= 1	# Horizontal Yeti lethality range of the demon.
+DEMON_SPEED	= 1	# Horizontal maximum speed of an ICBM.
 
-# Probability that the Yeti melts spontaneously during any given turn.
-PROB_SPONTANEOUS_MELT = 1.0
-
-# Horizontal speed of an ICBM.
-ICBM_SPEED = 3
-
-# Horizontal Yeti lethality range of the ICBM.
-ICBM_RANGE = 2
-
-# Horizontal Yeti lethality range of the demon.
-DEMON_RANGE = 1
-
-# Horizontal maximum speed of an ICBM.
-DEMON_SPEED = 1
-
-# Probability that the "Incant Fire Demon" spell will go wrong.
-PROB_BAD_SPELL = 10.0
-
-# Probability that a teleport will go wrong.
-PROB_BAD_TELEPORT = 10.0
-
-# Probability that ICBM will detonate in the player's backpack during launch.
-PROB_BAD_ICBM = 30.0
-
-# Probability that the player will slip on the ice and fall down for
-# each turn during which the player is skiiing on ice.
-PROB_SLIP_ON_ICE = 2.0
-
-# Probability that the player will fall down for each turn during
-# which the player is skiiing on bare ground.
-PROB_FALL_ON_GROUND = 10.0
-
-# Probability that the player will hit a tree in
-# each turn during which the player is skiiing past a tree.
-PROB_HIT_TREE = 25.0
-
-# Probability that the player will land badly and
-# fall down during a landing from a jump or hop.
-PROB_BAD_LANDING = 3.0
+# Per-turn probabilities
+PROB_YETI_MELT  	= 1.0	# Of Yeti spontaneously melting.
+PROB_SKIS_MELT_YETI	= 20.0	# Of melting Yeti by jumping over it.
+PROB_BAD_SPELL  	= 10.0 	# Of "Summon Fire Demon" spell going awry.
+PROB_BAD_TELEPORT	= 10.0	# Of a teleport going wrong.
+PROB_BAD_ICBM   	= 30.0	# Of your ICBM exploding on launch.
+PROB_SLIP_ON_ICE	= 2.0	# Of slipping when on ice.
+PROB_FALL_ON_GROUND	= 10.0	# Of falling down on bare ground.
+PROB_HIT_TREE   	= 25.0	# Of hitting tree, each turn in trees
+PROB_BAD_LANDING	= 3.0	# Of land badly from jump or hop.
 
 # Number of points awarded to the player for the successful completion
 # of one jump.  For scoring purposes, a hop is considered to consist
@@ -270,7 +242,7 @@ class SkiWorld:
         # If there is a	tree in the way, the Yeti is blocked.
         if exists(self.yeti):
             if (self.nearby(self.yeti) and prob(PROB_SKIS_MELT_YETI)) \
-            		or prob(PROB_SPONTANEOUS_MELT):
+            		or prob(PROB_YETI_MELT):
                 self.yeti = None
                 player.num_snomen_melted += 1
 
@@ -479,7 +451,7 @@ class SkiPlayer:
                 if prob(PROB_BAD_SPELL):
                     self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
 
-		world.demon_pos = self.teleport()
+		world.demon_pos = world.teleport()
 		break
             else:
 		break
