@@ -19,7 +19,7 @@ Available commands are:
  i = launch ICBM          d = summon Fire Demon
 """
 version='6.1'
-import time, random, curses, copy, sys
+import time, random, curses, copy, sys, os
 
 REP_SNOW	= '.'
 REP_TREE	= 'Y'
@@ -450,7 +450,7 @@ class SkiPlayer:
                 sys.stdout.write(`world`)
                 continue
             elif cmd == '!':
-                os.system(cmdline + 1)
+                os.system(cmdline[1:])
                 sys.stdout.write(`world`)
                 continue
             elif cmd == 'R': 	# Move right
