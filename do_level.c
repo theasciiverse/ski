@@ -10,6 +10,9 @@
 #ifdef CURSES
 #include <curses.h>
 #endif /* CURSES */
+#ifdef NCURSES
+#include <ncurses.h>
+#endif /* NCURSES */
 #include "ski.h"
 
 #ifdef A_COLOR
