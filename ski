@@ -8,7 +8,7 @@
 # Rewritten in Python
 # Copright 2003 by Eric S. Raymond
 #
-"""
+"""\
 This is ski %s, designed by Mark Stevans, ported by Eric S. Raymond.
 You are hurtling down a ski slope in reverse, trying to evade the Yeti.
 Available commands are:
@@ -17,10 +17,12 @@ Available commands are:
  j = jump                 h = hop
  t = teleport             Enter = keep skiing
  i = launch ICBM          d = summon Fire Demon
+ 
  ! = interpret line as shell command and execute.
+ ? = print this help message.
 
 """
-version='6.1'
+version='6.2'
 import time, random, curses, copy, sys, os
 
 REP_SNOW	= '.'
@@ -34,106 +36,90 @@ REP_DEMON	= 'D'
 
 terrain_key = [
 "Terrain types:   ",
-REP_SNOW,
-" = snow      ",
-REP_TREE, 
-" = tree  ",
-REP_GROUND,
-" = bare ground     ",
-REP_ICE,
-" = ice\n\
+REP_SNOW, " = snow      ",
+REP_TREE, " = tree  ",
+REP_GROUND, " = bare ground     ",
+REP_ICE, " = ice\n\
 Creatures:       ",
-REP_PLAYER, 
-" = player    ",
-REP_YETI,
-" = yeti  ",
-REP_ICBM,
-" = ICBM            ",
-REP_DEMON,
-" = fire demon"]
+REP_PLAYER, " = player    ",
+REP_YETI,   " = yeti  ",
+REP_ICBM,   " = ICBM            ",
+REP_DEMON,  " = fire demon"]
 
 # Length of line
 LINE_LEN = 70
 
-# "MIN_YETI_APPEARANCE_DISTANCE" is the minimum distance from the player
-# at which a new Yeti may appear.
+# Minimum distance from the player at which a new Yeti may appear.
 MIN_YETI_APPEARANCE_DISTANCE = 3
 
-# "LEVEL_MULTIPLIER" is a constant multiplied into the first element of the
-# cellular growth automaton probability array with each passing level.
+# Constant multiplied into the first element of the cellular growth
+# automaton probability array with each passing level.
 LEVEL_MULTIPLIER = 1.01
 
-# "MAX_HORIZONTAL_PLAYER_SPEED" defines the absolute value of the maximum
-#horizontal player speed.
+# Absolute value of maximum horizontal player speed.
 MAX_HORIZONTAL_PLAYER_SPEED = 5
 
-# "PROB_SKIS_MELT_YETI" is the probability that the player's jet-powered
-# skis will melt the Yeti during each turn in which the player is jumping
-# over the Yeti.
+# Probability that the player's jet-powered skis will melt the Yeti
+# during each turn in which the player is jumping over the Yeti.
 PROB_SKIS_MELT_YETI = 20.0
 
-# "PROB_SPONTANEOUS_MELT" is the probability that the Yeti melts
-# spontaneously during any given turn.
+# Probability that the Yeti melts spontaneously during any given turn.
 PROB_SPONTANEOUS_MELT = 1.0
 
-# "ICBM_SPEED" is the horizontal speed of an ICBM.
+# Horizontal speed of an ICBM.
 ICBM_SPEED = 3
 
-# "ICBM_RANGE" is the horizontal Yeti lethality range of the ICBM.
+# Horizontal Yeti lethality range of the ICBM.
 ICBM_RANGE = 2
 
-# "DEMON_RANGE" is the horizontal Yeti lethality range of the demon.
+# Horizontal Yeti lethality range of the demon.
 DEMON_RANGE = 1
 
-# "ICBM_SPEED" is the maximum horizontal speed of an ICBM.
+# Horizontal maximum speed of an ICBM.
 DEMON_SPEED = 1
 
-# "PROB_BAD_SPELL" is the probability that the "Incant Fire Demon" spell will
-# be bad during each incantation.
+# Probability that the "Incant Fire Demon" spell will go wrong.
 PROB_BAD_SPELL = 10.0
 
-# "PROB_BAD_TELEPORT" is the probability that the teleportation device will
-# fail to safely teleport the player during each application.
+# Probability that a teleport will go wrong.
 PROB_BAD_TELEPORT = 10.0
 
-# "PROB_BAD_ICBM" is the probability that a nuclear ICBM will detonate in
-# the player's backpack during each launch.
+# Probability that ICBM will detonate in the player's backpack during launch.
 PROB_BAD_ICBM = 30.0
 
-# "PROB_SLIP_ON_ICE" is the probability that the player will slip on the ice
-# and fall down for each turn during which the player is skiiing on ice.
+# Probability that the player will slip on the ice and fall down for
+# each turn during which the player is skiiing on ice.
 PROB_SLIP_ON_ICE = 2.0
 
-# "PROB_FALL_ON_GROUND" is the probability that the player will fall down
-# for each turn during which the player is skiiing on bare ground.
+# Probability that the player will fall down for each turn during
+# which the player is skiiing on bare ground.
 PROB_FALL_ON_GROUND = 10.0
 
-# "PROB_HIT_TREE" is the probability that the player will hit a tree in
+# Probability that the player will hit a tree in
 # each turn during which the player is skiiing past a tree.
 PROB_HIT_TREE = 25.0
 
-# "PROB_BAD_LANDING" is the probability that the player will land badly and
+# Probability that the player will land badly and
 # fall down during a landing from a jump or hop.
 PROB_BAD_LANDING = 3.0
 
-# "POINTS_PER_JUMP" is the number of points awarded to the player for the
-# successful completion of one jump.  For scoring purposes, a hop is
-# considered to consist of exactly one half-jump.
+# Number of points awarded to the player for the successful completion
+# of one jump.  For scoring purposes, a hop is considered to consist
+# of exactly one half-jump.
 POINTS_PER_JUMP	= 20
 
-# "POINTS_PER_METER" is the number of points awarded to the player for each
-# meter of horizontal or vertical motion during each turn.
+# Number of points awarded to the player for each meter of horizontal
+# or vertical motion during each turn.
 POINTS_PER_METER = 1
 
-# "POINTS_PER_MELTED_YETI" is the number of points awarded to the player
-# for each Yeti that melts during the course of the game, regardless of
-# whether the player passively caused the Yeti to melt by luring him from a
-# snowbank, or actively melted the Yeti using his skis, an ICBM, or with
-# the assistance of the Fire Demon.
+# Number of points awarded to the player for each Yeti that melts
+# during the course of the game, regardless of whether the player
+# passively caused the Yeti to melt by luring him from a snowbank, or
+# actively melted the Yeti using his skis, an ICBM, or with the
+# assistance of the Fire Demon.
 POINTS_PER_MELTED_YETI = 100
 
-# "POINTS_PER_INJURY_DEGREE" is number of pints docked from your score
-# for each degree of injury.
+# Number of pints docked from your score for each degree of injury.
 POINTS_PER_INJURY_DEGREE = -40
 
 # The injury categories.
@@ -542,7 +528,7 @@ if __name__ == "__main__":
     reset = curses.tigetstr("sgr0") or ""
     terrain_key = colorize(terrain_key)
 
-    print "SKI!  Version 6.1.  Type ? for help.\n"
+    print "SKI!  Version %s.  Type ? for help." % version
     world = SkiWorld()
     player = SkiPlayer()
 
@@ -559,6 +545,3 @@ if __name__ == "__main__":
         print "\nBye!"
 
 # end
-
-
-
