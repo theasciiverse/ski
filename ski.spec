@@ -1,5 +1,5 @@
 Name: ski
-Version: 6.2
+Version: 6.3
 Release: 1
 URL: http://www.catb.org/~esr/ski/
 Source0: %{name}-%{version}.tar.gz
@@ -42,6 +42,9 @@ cp ski.6 "$RPM_BUILD_ROOT"%{_mandir}/man6/
 %{_bindir}/ski
 
 %changelog
+* Sat Jan  3 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.3-1
+- Fix bug introduced to teleport command in 6.2.
+
 * Tue Dec 31 2003 Eric S. Raymond <esr@snark.thyrsus.com> 6.2
 - Emit reset on keyboard interrupt, just in case user bails out in the
   middle af a row refresh.  Fix bug in ! command interpretation.

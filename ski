@@ -439,7 +439,7 @@ class SkiPlayer:
                 if percent(PROB_BAD_TELEPORT):
                     self.__accident("You materialized 25 feet in the air!",
                                   SLIGHT_INJURY)
-		world.player_pos = self.teleport()
+		world.player_pos = world.teleport()
 		break
             elif cmd == 'I':	# Launch backpack ICBM
                 if percent(PROB_BAD_ICBM):
