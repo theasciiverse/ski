@@ -53,7 +53,7 @@ MAX_HORIZONTAL_PLAYER_SPEED = 5
 ICBM_SPEED	= 3	# Horizontal speed of an ICBM.
 ICBM_RANGE	= 2	# Horizontal Yeti lethality range of the ICBM.
 DEMON_RANGE	= 1	# Horizontal Yeti lethality range of the demon.
-DEMON_SPEED	= 1	# Horizontal maximum speed of an ICBM.
+DEMON_SPEED	= 1	# Horizontal maximum speed of the Fire Demon.
 
 # Per-turn probabilities
 PROB_YETI_MELT  	= 1.0	# Of Yeti spontaneously melting.
