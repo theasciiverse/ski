@@ -165,14 +165,11 @@ class SkiWorld:
         self.prob_ground = [0.0, 30.0, 70.0, 90.0]
 
 	self.level_num = 0
-	self.player_pos = LINE_LEN / 2
+	self.player_pos = random.choice(range(LINE_LEN))
 	self.yeti = None
 	self.icbm_pos = None
 	self.demon_pos = None
 	self.slope = [REP_SNOW] * LINE_LEN
-
-        # Initialize the player's position.
-        self.player_pos = random.choice(range(LINE_LEN))
 
         # Randomize the appearance probabilities.
         self.prob_tree[0] = (random.randint(0, 99)) / 500.0 + 0.05
