@@ -7,6 +7,9 @@
 <refentrytitle>SKI</refentrytitle>
 <manvolnum>6</manvolnum>
 <refmiscinfo class='date'>14 October 1990</refmiscinfo>
+<refmiscinfo class='source'>ski</refmiscinfo>
+<refmiscinfo class='product'>ski</refmiscinfo>
+<refmiscinfo class='manual'>Games</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ski</refname>
@@ -32,9 +35,10 @@ teleport through hyperspace, launch nuclear ICBMs, and cast spells to call the
 Fire Demon.  And since the hazards occur in patches, you can skillfully
 out-maneuver them.</para>
 
-<para>You ski until something bad happens to you.  Your final score is based on
-how far you have skiied, how many jumps you made, how many Yetis have melted
-during your run, and how healthy you are when are finished.</para>
+<para>You ski until something bad happens to you.  Your final score is
+based on how far you have skied, how many jumps you made, how many
+Yetis have melted during your run, and how healthy you are when are
+finished.</para>
 
 <para>These characters represent the things that you see on the slope
 behind you:</para>
@@ -76,7 +80,7 @@ fall down.</para>
   <varlistentry>
   <term>A</term>
   <listitem>
-<para>This is the Yeti!  As soon as he crawls out of a Snobank, he
+<para>This is the Yeti!  As soon as he crawls out of a snowbank, he
 will lumber directly towards you at one space per turn, and if he gets
 within one space of you, he will grab you and beat you up!  However,
 he has trouble moving through trees.  Steer clear from the Yeti, and
