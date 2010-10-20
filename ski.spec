@@ -45,7 +45,7 @@ cp ski.6 "$RPM_BUILD_ROOT"%{_mandir}/man6/
 
 %changelog
 * Wed Oct 20 2010 Eric S. Raymond <esr@snark.thyrsus.com> 6.6-1
-- License changed to BSD
+- License changed to BSD.
 
 * Mon Jan 12 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.5-1
 - 6.4 introduced a bug into the ? and ! commands, now fixed.

@@ -191,7 +191,7 @@ else.</para>
   <varlistentry>
   <term>!</term>
   <listitem>
-<para>Spawn an invisible monster called a UNIX shell. You may type to
+<para>Spawn an invisible monster called a Unix shell. You may type to
 the shell; it will do strange things with your input, opening a space
 warp in the middle of the ski-slope to display them at you. The shell
 monster is polite; when it is done, you will be deposited back on your
