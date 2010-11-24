@@ -1,6 +1,7 @@
 #
 # makefile for `ski'
 #
+# Note: There is also a version variable in ski itself.
 VERS=$(shell sed <ski.spec -n -e '/Version: \(.*\)/s//\1/p')
 
 SOURCES = README COPYING ski ski.xml ski.6 Makefile ski.spec
