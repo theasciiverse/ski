@@ -16,6 +16,11 @@ ski.html: ski.xml
 clean:
 	rm -f *~ *.6 *.html *.rpm *.lsm MANIFEST SHIPPER.*
 
+pychecker:
+	@ln -f ski ski.py
+	@-pychecker --only --limit 50 ski.py
+	@rm -f ski.py*
+
 ski-$(VERS).tar.gz: $(SOURCES)
 	@ls $(SOURCES) | sed s:^:ski-$(VERS)/: >MANIFEST
 	@(cd ..; ln -s ski ski-$(VERS))

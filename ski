@@ -152,7 +152,7 @@ class SkiWorld:
         "Return a random location"
         return random.choice(range(len(self.slope)))
 
-    def gen_next_slope(self, next_level):
+    def gen_next_slope(self):
         # Generates the slope of the next level, dependent upon
         # the characteristics of the current level, the probabilities, and the
         # position of the player.
@@ -218,7 +218,7 @@ class SkiWorld:
                         player.player_speed + len(self.slope)) % len(self.slope)
 
         # Generate the updated slope.
-        self.gen_next_slope(self)
+        self.gen_next_slope()
 
         # If there is no Yeti, one might be created.
         if not exists(self.yeti) and percent(self.prob_yeti_appearance):
@@ -374,7 +374,7 @@ class SkiPlayer:
     def check_obstacles(self, world):
 	# If we are just landing after a jump, we might fall down.
         if (self.jump_count == 0) and percent(PROB_BAD_LANDING):
-            self.__accident("Whoops!  A bad landing!", LIGHT_INJURY)
+            self.__accident("Whoops!  A bad landing!", SLIGHT_INJURY)
 
 	# If there is a tree in our position, we might hit it.
         if (world.terrain() == REP_TREE) and percent(PROB_HIT_TREE):
