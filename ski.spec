@@ -9,6 +9,7 @@ Summary: a hotdogging game, evade the deadly Yeti on your jet-powered skis
 BuildRoot: %{_tmppath}/%{name}-root
 BuildArch: noarch
 #Keywords: game, solitaire
+#Logo: ski.png
 
 %description
 Imagine you are skiing down an infinite slope, facing such hazards as
