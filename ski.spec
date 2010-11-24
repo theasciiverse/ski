@@ -1,5 +1,5 @@
 Name: ski
-Version: 6.6
+Version: 6.7
 Release: 1
 URL: http://www.catb.org/~esr/ski/
 Source0: %{name}-%{version}.tar.gz
@@ -45,6 +45,9 @@ cp ski.6 "$RPM_BUILD_ROOT"%{_mandir}/man6/
 %{_bindir}/ski
 
 %changelog
+* Wed Nov 24 2010 Eric S. Raymond <esr@snark.thyrsus.com> 6.7-1
+- Fix a minor bug revealed by pychecker.
+
 * Wed Oct 20 2010 Eric S. Raymond <esr@snark.thyrsus.com> 6.6-1
 - License changed to BSD.
 - Documentation fixes.
