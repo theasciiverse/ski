@@ -3,7 +3,7 @@
 
 Package: ski
 
-Description: a hotdogging game, evade the deadly Yeti on your jet-powered skis
+Description: A hotdogging game, evade the deadly Yeti on your jet-powered skis
  Imagine you are skiing down an infinite slope, facing such hazards as
  trees, ice, bare ground, and the man-eating Yeti!  Unfortunately,
  you have put your jet-powered skis on backwards, so you can't see
@@ -14,10 +14,14 @@ Description: a hotdogging game, evade the deadly Yeti on your jet-powered skis
  skillfully outmaneuver them.  A fun and very silly game that proves
  you don't need fancy graphical user interfaces to have a good time.
 
-XBS-Destinations: freshmeat
+XBS-Destinations: freecode
 
 Homepage: http://www.catb.org/~esr/ski
+
+XBS-HTML-Template: index.html
 
 XBS-Logo: ski.png
 
 XBS-Project-Tag-List: games
+
+XBS-VC-Tag-Template: %(version)s

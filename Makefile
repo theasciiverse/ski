@@ -14,7 +14,7 @@ ski.html: ski.xml
 	xmlto html-nochunks ski.xml
 
 clean:
-	rm -f *~ *.6 *.html *.rpm *.lsm MANIFEST SHIPPER.*
+	rm -f *~ *.6 *.html *.rpm *.lsm MANIFEST
 
 pychecker:
 	@ln -f ski ski.py
@@ -34,4 +34,4 @@ ski-$(VERS).tar.gz: $(SOURCES)
 dist: ski-$(VERS).tar.gz
 
 release: ski-$(VERS).tar.gz ski.html
-	shipper -u -m -t; make clean
+	shipper version=$(VERS) | sh -e -x
