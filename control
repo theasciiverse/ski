@@ -18,7 +18,7 @@ XBS-Destinations: freecode
 
 Homepage: http://www.catb.org/~esr/ski
 
-XBS-HTML-Template: index.html
+XBS-HTML-Target: index.html
 
 XBS-Logo: ski.png
 
