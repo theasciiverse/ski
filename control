@@ -22,6 +22,6 @@ XBS-HTML-Template: index.html
 
 XBS-Logo: ski.png
 
-XBS-Project-Tag-List: games
+XBS-Freecode-Tags: games
 
 XBS-VC-Tag-Template: %(version)s
