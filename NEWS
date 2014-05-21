@@ -1,23 +1,25 @@
-* Wed Nov 24 2010 Eric S. Raymond <esr@snark.thyrsus.com> 6.7
-- Fix a minor bug revealed by pychecker.
+				ski project history
 
-* Wed Oct 20 2010 Eric S. Raymond <esr@snark.thyrsus.com> 6.6
-- License changed to BSD.
-- Documentation fixes.
+6.8: 2014-05-20
+  Fix a minor bug revealed by pychecker.
 
-* Mon Jan 12 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.5
-- 6.4 introduced a bug into the ? and ! commands, now fixed.
+6.6: 2010-10-20
+  License changed to BSD.
+  Documentation fixes.
 
-* Sun Jan 11 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.4
-- Game commands now accept numeric repeat prefixes.
+6.5: 2004-01-12
+  6.4 introduced a bug into the ? and ! commands, now fixed.
 
-* Sat Jan  3 2004 Eric S. Raymond <esr@snark.thyrsus.com> 6.3
-- Fix bug introduced to teleport command in 6.2.
+6.4: 2004-01-11
+  Game commands now accept numeric repeat prefixes.
 
-* Tue Dec 31 2003 Eric S. Raymond <esr@snark.thyrsus.com> 6.2
-- Emit reset on keyboard interrupt, just in case user bails out in the
+6.3: 2004-01-03
+  Fix bug introduced to teleport command in 6.2.
+
+6.2: 2003-12-31
+  Emit reset on keyboard interrupt, just in case user bails out in the
   middle af a row refresh.  Fix bug in ! command interpretation.
   Terrain key is now colorized.
 
-* Tue Dec 30 2003 Eric S. Raymond <esr@snark.thyrsus.com> 6.1
-- Python reimplementation of the original C game.
+6.1: 2003-12-30
+  Python reimplementation of the original C game.
