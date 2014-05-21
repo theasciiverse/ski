@@ -8,12 +8,12 @@ Available commands are:
  j = jump                 h = hop
  t = teleport             Enter = keep skiing
  i = launch ICBM          d = summon Fire Demon
- 
+
  ! = interpret line as shell command and execute.
  ? = print this help message.
 
 """
-version="6.7"
+version = "6.7"
 import time, random, curses, copy, sys, os
 
 REP_SNOW	= '.'
@@ -127,12 +127,12 @@ class SkiWorld:
         self.prob_ice = [0.0, 30.0, 70.0, 90.0]
         self.prob_ground = [0.0, 30.0, 70.0, 90.0]
 
-	self.level_num = 0
-	self.slope = [REP_SNOW] * LINE_LEN
-	self.player_pos = self.teleport()
-	self.yeti = None
-	self.icbm_pos = None
-	self.demon_pos = None
+        self.level_num = 0
+        self.slope = [REP_SNOW] * LINE_LEN
+        self.player_pos = self.teleport()
+        self.yeti = None
+        self.icbm_pos = None
+        self.demon_pos = None
 
         # Randomize the appearance probabilities.
         self.prob_tree[0] = (random.randint(0, 99)) / 500.0 + 0.05
@@ -144,9 +144,9 @@ class SkiWorld:
         "What kind of terrain are we on?"
         return self.slope[self.player_pos]
 
-    def nearby(self, pos, min=1):
+    def nearby(self, pos, minval=1):
         "Is the specified position near enough to the player?"
-        return exists(pos) and abs(pos - self.player_pos) <= min        
+        return exists(pos) and abs(pos - self.player_pos) <= minval
 
     def teleport(self):
         "Return a random location"
@@ -237,18 +237,18 @@ class SkiWorld:
         self.prob_yeti_appearance *= LEVEL_MULTIPLIER
 
     def manipulate_objects(self, player):
-	# If there is a Yeti, the player's jet-powered skis may melt him,
-	# or he may spontaneously melt. Otherwise move him towards the player.
+        # If there is a Yeti, the player's jet-powered skis may melt him,
+        # or he may spontaneously melt. Otherwise move him towards the player.
         # If there is a	tree in the way, the Yeti is blocked.
         if exists(self.yeti):
             if (self.nearby(self.yeti) and percent(PROB_SKIS_MELT_YETI)) \
-            		or percent(PROB_YETI_MELT):
+                   or percent(PROB_YETI_MELT):
                 self.yeti = None
                 player.num_snomen_melted += 1
 
         if exists(self.yeti):
             if self.yeti < self.player_pos:
-    		if self.slope[self.yeti + 1] != REP_TREE:
+                if self.slope[self.yeti + 1] != REP_TREE:
                     self.yeti += 1
             else:
                 if self.slope[self.yeti - 1] != REP_TREE:
@@ -279,22 +279,22 @@ class SkiWorld:
                 if percent(25.0):
                     self.demon_pos = None
 
-	# If there is a Yeti and an ICBM on the slope, the Yeti
-	# might get melted.
+        # If there is a Yeti and an ICBM on the slope, the Yeti
+        # might get melted.
         if exists(self.yeti) and exists(self.icbm_pos):
             if abs(self.yeti - self.icbm_pos) <= ICBM_RANGE:
                 self.icbm_pos = None
                 self.yeti = None
                 player.num_snomen_melted += 1
 
-	# If there is a Yeti and a fire demon, he might get melted.
-	if exists(self.yeti) and exists(self.demon_pos):
+        # If there is a Yeti and a fire demon, he might get melted.
+        if exists(self.yeti) and exists(self.demon_pos):
             if abs(self.yeti - self.demon_pos) <= 1:
                 self.yeti = None
                 player.num_snomen_melted += 1
 
     def __repr__(self):
-	"Create a picture of the current level."
+        "Create a picture of the current level."
         picture = copy.copy(self.slope)
         picture[self.player_pos] = REP_PLAYER
         if exists(self.yeti):
@@ -304,29 +304,29 @@ class SkiWorld:
         if exists(self.icbm_pos):
             picture[self.icbm_pos] = REP_ICBM
         picture = colorize(picture)
-	return "%4d %s" % (self.level_num, picture)
+        return "%4d %s" % (self.level_num, picture)
 
 class SkiPlayer:
     injuries = (
-	"However, you escaped injury!", 
-	"But you weren't hurt at all!", 
-	"But you only got a few scratches.", 
-	"You received some cuts and bruises.", 
-	"You wind up with a concussion and some contusions.", 
-	"You now have a broken rib.", 
-	"Your left arm has been fractured.",
-	"You suffered a broken ankle.",
-	"You have a broken arm and a broken leg.", 
-	"You have four broken limbs and a cut!", 
-	"You broke every bone in your body!", 
-	"I'm sorry to tell you that you have been killed....")
+        "However, you escaped injury!",
+        "But you weren't hurt at all!",
+        "But you only got a few scratches.",
+        "You received some cuts and bruises.",
+        "You wind up with a concussion and some contusions.",
+        "You now have a broken rib.",
+        "Your left arm has been fractured.",
+        "You suffered a broken ankle.",
+        "You have a broken arm and a broken leg.",
+        "You have four broken limbs and a cut!",
+        "You broke every bone in your body!",
+        "I'm sorry to tell you that you have been killed....")
 
     def __init__(self):
-	self.jump_count = -1
-	self.num_snomen_melted = 0
-	self.num_jumps_attempted = 0.0
-	self.player_speed = 0
-	self.meters_travelled = 0
+        self.jump_count = -1
+        self.num_snomen_melted = 0
+        self.num_jumps_attempted = 0.0
+        self.player_speed = 0
+        self.meters_travelled = 0
 
     def __accident(self, msg, severity):
         # "__accident" is called when the player gets into an __accident,
@@ -372,23 +372,23 @@ class SkiPlayer:
         sys.exit(0)
 
     def check_obstacles(self, world):
-	# If we are just landing after a jump, we might fall down.
+        # If we are just landing after a jump, we might fall down.
         if (self.jump_count == 0) and percent(PROB_BAD_LANDING):
             self.__accident("Whoops!  A bad landing!", SLIGHT_INJURY)
 
-	# If there is a tree in our position, we might hit it.
+        # If there is a tree in our position, we might hit it.
         if (world.terrain() == REP_TREE) and percent(PROB_HIT_TREE):
             self.__accident("Oh no!  You hit a tree!", SEVERE_INJURY)
 
-	# If there is bare ground under us, we might fall down.
+        # If there is bare ground under us, we might fall down.
         if (world.terrain() == REP_GROUND) and percent(PROB_FALL_ON_GROUND):
             self.__accident("You fell on the ground!", MODERATE_INJURY)
 
-	# If we are on ice, we might slip.
+        # If we are on ice, we might slip.
         if (world.terrain() == REP_ICE) and percent(PROB_SLIP_ON_ICE):
             self.__accident("Oops!  You slipped on the ice!",SLIGHT_INJURY)
 
-	# If there is a Yeti next to us, he may grab us.
+        # If there is a Yeti next to us, he may grab us.
         if world.nearby(world.yeti):
             self.__accident("Yikes!  The Yeti's got you!",MODERATE_INJURY)
 
@@ -401,7 +401,7 @@ class SkiPlayer:
             player.jump_count -= 1
 
     def do_command(self, world, cmdline):
-	# Print a prompt, and read a command.  Return True to advance game.
+        # Print a prompt, and read a command.  Return True to advance game.
         cmd = cmdline[0].upper()
         if cmd == '?':
             print __doc__ % version, terrain_key
@@ -411,13 +411,13 @@ class SkiPlayer:
             return False
         elif cmd == 'R': 	# Move right
             if ((world.terrain() != REP_ICE) and \
-                (self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED)):
-                    self.player_speed += 1
+                        (self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED)):
+                self.player_speed += 1
             return True
         elif cmd == 'L':	# Move left
             if ((world.terrain() != REP_ICE) and \
-                (self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED)):
-                    self.player_speed -= 1
+                        (self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED)):
+                self.player_speed -= 1
             return True
         elif cmd == 'J':	# Jump
             self.jump_count = random.randint(0, 5) + 4
@@ -458,7 +458,7 @@ def colorize(picture):
     picture += reset
     return "".join(picture)
 
-# Main sequence 
+# Main sequence
 if __name__ == "__main__":
     # Initialize the random number generator.
     random.seed(time.time())
@@ -482,7 +482,7 @@ if __name__ == "__main__":
     try:
         repeat = 1
         while True:
-            sys.stdout.write(`world`)
+            sys.stdout.write(repr(world))
             # If we are jumping, just finish the line.  Otherwise, check for
             # obstacles, and do a command.
             if player.jump_count >= 0:

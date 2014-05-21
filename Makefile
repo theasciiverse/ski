@@ -3,7 +3,8 @@
 #
 VERS=$(shell sed <ski -n -e '/version="\(.*\)"/s//\1/p')
 
-SOURCES = README COPYING NEWS ski ski.xml ski.6 Makefile control ski.png
+SOURCES = README COPYING NEWS ski ski.xml ski.6 Makefile \
+	control ski.png ski.desktop
 
 all: ski.6
 
@@ -20,6 +21,11 @@ pychecker:
 	@ln -f ski ski.py
 	@-pychecker --only --limit 50 ski.py
 	@rm -f ski.py*
+
+COMMON_PYLINT = --rcfile=/dev/null --reports=n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
+PYLINTOPTS = $(COMMON_PYLINT) --disable="C0103,C0111,C0301,C0325,C0326,C1001,R0902,R0911,R0912,W0621"
+pylint:
+	@pylint $(PYLINTOPTS) ski
 
 version:
 	@echo $(VERS)
