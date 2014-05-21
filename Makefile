@@ -1,7 +1,7 @@
 #
 # makefile for `ski'
 #
-VERS=$(shell sed <ski -n -e '/version="\(.*\)"/s//\1/p')
+VERS=$(shell sed <ski -n -e '/version *= *"\(.*\)"/s//\1/p')
 
 SOURCES = README COPYING NEWS ski ski.xml ski.6 Makefile \
 	control ski.png ski.desktop
