@@ -17,6 +17,24 @@ ski.html: ski.xml
 clean:
 	rm -f *~ *.6 *.html *.rpm *.lsm MANIFEST
 
+install: ski.6 uninstall
+	install -m 0755 -d $(DESTDIR)/usr/bin
+	install -m 0755 -d $(DESTDIR)/usr/share/man/man6
+	install -m 0755 -d $(DESTDIR)//usr/share/applications/
+	install -m 0755 -d $(DESTDIR)/usr/share/pixmaps/
+	install -m 0755 -d $(DESTDIR)/usr/share/appdata
+	install -m 0755 ski $(DESTDIR)/usr/bin/
+	install -m 0644 ski.6 $(DESTDIR)/usr/share/man/man6/
+	install -m 0644 ski.desktop $(DESTDIR)/usr/share/applications
+	install -m 0644 ski.png $(DESTDIR)/usr/share/pixmaps/
+	install -m 0644 ski.xml $(DESTDIR)/usr/share/appdata/
+
+uninstall:
+	rm -f /usr/bin/ski /usr/share/man/man6/ski.6
+	rm -f /usr/share/applications/ski.desktop
+	rm -f /usr/share/pixmaps/ski.png
+	rm -f /usr/share/appdata/ski.xml
+
 pychecker:
 	@ln -f ski ski.py
 	@-pychecker --only --limit 50 ski.py
