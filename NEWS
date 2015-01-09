@@ -1,5 +1,8 @@
 				ski project history
 
+Repository head:
+  BSD port patch.
+
 6.8: 2014-05-20
   Fix a minor bug revealed by pychecker.
 

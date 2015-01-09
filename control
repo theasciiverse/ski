@@ -14,9 +14,11 @@ Description: A hotdogging game, evade the deadly Yeti on your jet-powered skis
  skillfully outmaneuver them.  A fun and very silly game that proves
  you don't need fancy graphical user interfaces to have a good time.
 
-XBS-Destinations: freecode
+#XBS-Destinations: freecode
 
 Homepage: http://www.catb.org/~esr/ski
+
+#XBS-Gitorious-URL: https://gitorious.org/ski
 
 XBS-HTML-Target: index.html
 
