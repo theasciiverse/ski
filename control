@@ -18,7 +18,9 @@ XBS-Destinations: nemysis@gmx.ch
 
 Homepage: http://www.catb.org/~esr/ski
 
-#XBS-Repository-URL: http://thyrsus.com/gitweb/?p=ski.git
+XBS-Repository-URL: http://thyrsus.com/gitweb/?p=ski.git
+
+XBS-Clone-From: git@thyrsus.com:ski
 
 XBS-HTML-Target: index.html
 
