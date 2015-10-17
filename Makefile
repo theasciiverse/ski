@@ -61,3 +61,6 @@ dist: ski-$(VERS).tar.gz
 
 release: ski-$(VERS).tar.gz ski.html
 	shipper version=$(VERS) | sh -e -x
+
+refresh: ski.html
+	shipper -N -w version=$(VERS) | sh -e -x

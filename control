@@ -3,7 +3,7 @@
 
 Package: ski
 
-Description: A hotdogging game, evade the deadly Yeti on your jet-powered skis
+Description: A hotdogging game, evade the deadly Yeti on your jet-powered skis.
  Imagine you are skiing down an infinite slope, facing such hazards as
  trees, ice, bare ground, and the man-eating Yeti!  Unfortunately,
  you have put your jet-powered skis on backwards, so you can't see
@@ -18,14 +18,16 @@ XBS-Destinations: nemysis@gmx.ch
 
 Homepage: http://www.catb.org/~esr/ski
 
+XBS-HTML-Target: index.html
+
 XBS-Repository-URL: http://thyrsus.com/gitweb/?p=ski.git
 
-XBS-Clone-From: git@thyrsus.com:ski
+XBS-Developer-Clone: git@thyrsus.com:ski
 
-XBS-HTML-Target: index.html
+XBS-Anonymous-Clone: git://thyrsus.com/repositories/ski.git
 
 XBS-Logo: ski.png
 
-XBS-Freecode-Tags: games
+XBS-Project-Tags: games
 
 XBS-VC-Tag-Template: %(version)s

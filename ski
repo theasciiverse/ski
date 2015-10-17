@@ -13,6 +13,7 @@ Available commands are:
  ? = print this help message.
 
 """
+# SPDX-License-Identifier: BSD-2-clause
 version = "6.9"
 import time, random, curses, copy, sys, os
 
