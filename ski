@@ -17,7 +17,7 @@ Available commands are:
 
 import time, random, curses, copy, sys, os
 
-version = "6.9"
+version = "6.10"
 
 REP_SNOW	= '.'
 REP_TREE	= 'Y'
