@@ -1,5 +1,8 @@
 				ski project history
 
+Repository head:
+  Ported to Python 3.
+
 6.9: 2015-01-09
   BSD port patch.
 

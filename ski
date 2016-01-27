@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """\
 This is ski %s, designed by Mark Stevans, Python port by Eric S. Raymond.
 You are hurtling down a ski slope in reverse, trying to evade the Yeti.
@@ -14,7 +14,7 @@ Available commands are:
 
 """
 # SPDX-License-Identifier: BSD-2-Clause
-from __future__ import print_function
+
 import time, random, curses, copy, sys, os
 
 version = "6.9"
@@ -455,7 +455,7 @@ def colorize(picture):
     for i in range(len(picture)):
         if (i == 0 or (picture[i] != picture[i-1][-1])):
             if picture[i] in colordict:
-                picture[i] = colordict[picture[i]] + picture[i]
+                picture[i] = colordict[picture[i]].decode("ascii") + picture[i]
             else:
                 picture[i] = reset + picture[i]
     picture += reset
@@ -474,7 +474,7 @@ if __name__ == "__main__":
             colordict[ch] = curses.tparm(color, idx)
         else:
             colordict[ch] = ""
-    reset = curses.tigetstr("sgr0") or ""
+    reset = curses.tigetstr("sgr0").decode("ascii") or ""
     terrain_key = colorize(terrain_key)
 
     print("SKI!  Version %s.  Type ? for help." % version)
@@ -497,7 +497,7 @@ if __name__ == "__main__":
                 if repeat:
                     sys.stdout.write('\n')
                 else:
-                    cmd = raw_input("? ")
+                    cmd = input("? ")
                     if cmd == '':
                         cmd = '\n'
                     elif cmd[0] in "0123456789":
