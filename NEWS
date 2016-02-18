@@ -1,6 +1,9 @@
 				ski project history
 
-6.10: 2016-1-27
+6.11: 2016-02-18
+  Tweaked to run either on Python2 pr Python3.
+
+6.10: 2016-01-27
   Ported to Python 3.
 
 6.9: 2015-01-09
