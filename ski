@@ -481,7 +481,7 @@ if __name__ == "__main__":
             colordict[ch] = curses.tparm(color, idx)
         else:
             colordict[ch] = ""
-    reset = curses.tigetstr("sgr0").decode("ascii") or ""
+    reset = (curses.tigetstr("sgr0") or "").decode("ascii")
     terrain_key = colorize(terrain_key)
 
     print("SKI!  Version %s.  Type ? for help." % version)
