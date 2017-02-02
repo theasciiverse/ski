@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import time, random, curses, copy, sys, os
 
-version = "6.11"
+version = "6.12"
 
 REP_SNOW	= '.'
 REP_TREE	= 'Y'
