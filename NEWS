@@ -1,6 +1,6 @@
 				ski project history
 
-6.12: 2019-02-02
+6.12: 2016-02-02
   Prevent ski from aborting in the Homebrew test environment.
 
 6.11: 2016-02-18
