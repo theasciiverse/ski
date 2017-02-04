@@ -30,7 +30,7 @@
 
 6.2: 2003-12-31
   Emit reset on keyboard interrupt, just in case user bails out in the
-  middle af a row refresh.  Fix bug in ! command interpretation.
+  middle of a row refresh.  Fix bug in ! command interpretation.
   Terrain key is now colorized.
 
 6.1: 2003-12-30
