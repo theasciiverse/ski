@@ -454,12 +454,12 @@ class SkiPlayer:
 
 def colorize(picture):
     "Colorize special characters in a display list."
-    for i in range(len(picture)):
-        if (i == 0 or (picture[i] != picture[i-1][-1])):
-            if picture[i] in colordict:
-                picture[i] = colordict[picture[i]].decode("ascii") + picture[i]
+    for (i, c) in enumerate(picture):
+        if (i == 0 or (c != picture[i-1][-1])):
+            if c in colordict:
+                picture[i] = colordict[c].decode("ascii") + c
             else:
-                picture[i] = reset + picture[i]
+                picture[i] = reset + c
     picture += reset
     return "".join(picture)
 
