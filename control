@@ -20,11 +20,7 @@ Homepage: http://www.catb.org/~esr/ski
 
 XBS-HTML-Target: index.html
 
-XBS-Repository-URL: http://thyrsus.com/gitweb/?p=ski.git
-
-XBS-Developer-Clone: git@thyrsus.com:ski
-
-XBS-Anonymous-Clone: git://thyrsus.com/repositories/ski.git
+XBS-Repository-URL: https://gitlab.com/esr/ski
 
 XBS-Logo: ski.png
 
