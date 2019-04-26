@@ -1,5 +1,8 @@
 				ski project history
 
+6.2: 2019-04-26
+  Rehosted at GitLab.
+
 6.12: 2016-02-02
   Prevent ski from aborting in the Homebrew test environment.
 
