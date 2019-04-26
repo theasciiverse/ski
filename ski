@@ -69,7 +69,7 @@ PROB_BAD_ICBM   	= 30.0	# Of your ICBM exploding on launch.
 PROB_SLIP_ON_ICE	= 2.0	# Of slipping when on ice.
 PROB_FALL_ON_GROUND	= 10.0	# Of falling down on bare ground.
 PROB_HIT_TREE   	= 25.0	# Of hitting tree, each turn in trees
-PROB_BAD_LANDING	= 3.0	# Of land badly from jump or hop.
+PROB_BAD_LANDING	= 3.0	# Of landing badly from jump or hop.
 
 # Number of points awarded to the player for the successful completion
 # of one jump.  For scoring purposes, a hop is considered to consist

@@ -4,7 +4,7 @@
   Prevent ski from aborting in the Homebrew test environment.
 
 6.11: 2016-02-18
-  Tweaked to run either on Python2 pr Python3.
+  Tweaked to run either on Python2 or Python3.
 
 6.10: 2016-01-27
   Ported to Python 3.
