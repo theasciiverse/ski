@@ -1,6 +1,6 @@
 				ski project history
 
-Repository head::
+6.13: 2021-09-20::
   Ubuntu has abolished /usr/bin/python, change shebang to python3.
 
 6.12: 2019-04-26
