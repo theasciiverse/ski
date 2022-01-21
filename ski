@@ -17,6 +17,9 @@ Available commands are:
 # This code runs under both Python 2 and Python 3. Preserve this property!
 from __future__ import print_function
 
+# pylint: disable=invalid-name,missing-function-docstring,no-else-return,redefined-outer-name
+
+# pylint: disable=multiple-imports
 import time, random, curses, copy, sys, os
 
 version = "6.13"
@@ -112,9 +115,11 @@ colordict = {
 def percent(X):
     return (random.randint(0, 9999) / 100.0) <= (X)
 def exists(X):
-    return X != None
+    return X is not None
 
+# pylint: disable=too-many-instance-attributes
 class SkiWorld:
+    "The game state."
     def __init__(self):
         # Constants controlling the multiple cellular growth
         # automatons that are executed in parallel to generate
@@ -157,6 +162,7 @@ class SkiWorld:
         "Return a random location"
         return random.choice(list(range(len(self.slope))))
 
+    # pylint: disable=too-many-branches
     def gen_next_slope(self):
         # Generates the slope of the next level, dependent upon
         # the characteristics of the current level, the probabilities, and the
@@ -211,7 +217,7 @@ class SkiWorld:
             else:
                 self.slope[i] = REP_SNOW
 
-    def update_level(self, player):
+    def update_level(self):
         # Go to the next level, and move the player.
         self.level_num += 1
 
@@ -312,6 +318,7 @@ class SkiWorld:
         return "%4d %s" % (self.level_num, picture)
 
 class SkiPlayer:
+    "The player in all his glory."
     injuries = (
         "However, you escaped injury!",
         "But you weren't hurt at all!",
@@ -405,6 +412,7 @@ class SkiPlayer:
         if player.jump_count >= 0:
             player.jump_count -= 1
 
+    # pylint: disable=too-many-return-statements,too-many-branches
     def do_command(self, world, cmdline):
         # Print a prompt, and read a command.  Return True to advance game.
         cmd = cmdline[0].upper()
@@ -466,6 +474,7 @@ def colorize(picture):
 # Main sequence
 if __name__ == "__main__":
     try:
+        # pylint: disable=redefined-builtin
         input = raw_input
     except NameError:
         pass
@@ -517,7 +526,7 @@ if __name__ == "__main__":
                 if not player.do_command(world, cmd):
                     continue
             world.manipulate_objects(player)
-            world.update_level(player)
+            world.update_level()
             player.update_player()
     except (KeyboardInterrupt, EOFError):
         sys.stdout.write(reset)

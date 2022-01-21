@@ -43,9 +43,8 @@ pychecker:
 PYLINTOPTS = --rcfile=/dev/null --reports=n \
 	--msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
 	--dummy-variables-rgx='^_'
-SUPPRESSIONS = "C0103,C0111,C0301,C0325,C0326,C0330,C0410,C1001,R0902,R0911,R0912,W0621,W0622,W0141"
 pylint:
-	@pylint $(PYLINTOPTS) --disable=$(SUPPRESSIONS) ski
+	@pylint $(PYLINTOPTS) ski
 
 version:
 	@echo $(VERS)
