@@ -40,11 +40,8 @@ pychecker:
 	@-pychecker --only --limit 50 ski.py
 	@rm -f ski.py*
 
-PYLINTOPTS = --rcfile=/dev/null --reports=n \
-	--msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" \
-	--dummy-variables-rgx='^_'
 pylint:
-	@pylint $(PYLINTOPTS) ski
+	@pylint --score=n ski
 
 version:
 	@echo $(VERS)
