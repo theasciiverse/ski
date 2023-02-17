@@ -35,11 +35,6 @@ uninstall:
 	rm -f /usr/share/pixmaps/ski.png
 	rm -f /usr/share/appdata/ski.xml
 
-pychecker:
-	@ln -f ski ski.py
-	@-pychecker --only --limit 50 ski.py
-	@rm -f ski.py*
-
 pylint:
 	@pylint --score=n ski
 
