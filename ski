@@ -17,7 +17,7 @@ Available commands are:
 # This code runs under both Python 2 and Python 3. Preserve this property!
 from __future__ import print_function
 
-# pylint: disable=invalid-name,missing-function-docstring,no-else-return,redefined-outer-name
+# pylint: disable=invalid-name,missing-function-docstring,no-else-return,redefined-outer-name,consider-using-f-string,consider-using-enumerate
 
 # pylint: disable=multiple-imports
 import time, random, curses, copy, sys, os
@@ -374,8 +374,7 @@ class SkiPlayer:
         score += degree * POINTS_PER_INJURY_DEGREE
 
         # Negative scores are just too silly.
-        if score < 0:
-            score = 0
+        score = max(score, 0)
 
         # Print the player's score.
         print("Your score for this run is %ld." % score)
