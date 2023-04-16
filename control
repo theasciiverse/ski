@@ -1,5 +1,7 @@
 # This is not a real Debian control file, though the syntax is compatible
 # It's project metadata for the shipper tool
+# SPDX-FileCopyrightText: (C) Eric S. Raymond <esr@thyrsus.com>
+# SPDX-License-Identifier: BSD-2-Clause
 
 Package: ski
 

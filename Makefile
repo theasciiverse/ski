@@ -1,6 +1,9 @@
 #
 # makefile for `ski'
 #
+# SPDX-FileCopyrightText: (C) Eric S. Raymond <esr@thyrsus.com>
+# SPDX-License-Identifier: BSD-2-Clause
+#
 VERS=$(shell sed <ski -n -e '/version *= *"\(.*\)"/s//\1/p')
 
 SOURCES = README COPYING NEWS ski ski.xml ski.6 Makefile \
