@@ -25,26 +25,35 @@ import time, random, curses, copy, sys, os
 
 version = "6.14"
 
-REP_SNOW	= '.'
-REP_TREE	= 'Y'
-REP_GROUND	= ':'
-REP_ICE 	= '#'
-REP_PLAYER	= 'I'
-REP_YETI	= 'A'
-REP_ICBM	= '*'
-REP_DEMON	= 'D'
+REP_SNOW = "."
+REP_TREE = "Y"
+REP_GROUND = ":"
+REP_ICE = "#"
+REP_PLAYER = "I"
+REP_YETI = "A"
+REP_ICBM = "*"
+REP_DEMON = "D"
 
 terrain_key = [
-"Terrain types:   ",
-REP_SNOW, " = snow      ",
-REP_TREE, " = tree  ",
-REP_GROUND, " = bare ground     ",
-REP_ICE, " = ice\n\
+    "Terrain types:   ",
+    REP_SNOW,
+    " = snow      ",
+    REP_TREE,
+    " = tree  ",
+    REP_GROUND,
+    " = bare ground     ",
+    REP_ICE,
+    " = ice\n\
 Creatures:       ",
-REP_PLAYER, " = player    ",
-REP_YETI,   " = yeti  ",
-REP_ICBM,   " = ICBM            ",
-REP_DEMON,  " = fire demon"]
+    REP_PLAYER,
+    " = player    ",
+    REP_YETI,
+    " = yeti  ",
+    REP_ICBM,
+    " = ICBM            ",
+    REP_DEMON,
+    " = fire demon",
+]
 
 # Length of line
 LINE_LEN = 70
@@ -59,26 +68,26 @@ LEVEL_MULTIPLIER = 1.01
 # Absolute value of maximum horizontal player speed.
 MAX_HORIZONTAL_PLAYER_SPEED = 5
 
-ICBM_SPEED	= 3	# Horizontal speed of an ICBM.
-ICBM_RANGE	= 2	# Horizontal Yeti lethality range of the ICBM.
-DEMON_RANGE	= 1	# Horizontal Yeti lethality range of the demon.
-DEMON_SPEED	= 1	# Horizontal maximum speed of the Fire Demon.
+ICBM_SPEED = 3  # Horizontal speed of an ICBM.
+ICBM_RANGE = 2  # Horizontal Yeti lethality range of the ICBM.
+DEMON_RANGE = 1  # Horizontal Yeti lethality range of the demon.
+DEMON_SPEED = 1  # Horizontal maximum speed of the Fire Demon.
 
 # Per-turn probabilities
-PROB_YETI_MELT  	= 1.0	# Of Yeti spontaneously melting.
-PROB_SKIS_MELT_YETI	= 20.0	# Of melting Yeti by jumping over it.
-PROB_BAD_SPELL  	= 10.0 	# Of "Summon Fire Demon" spell going awry.
-PROB_BAD_TELEPORT	= 10.0	# Of a teleport going wrong.
-PROB_BAD_ICBM   	= 30.0	# Of your ICBM exploding on launch.
-PROB_SLIP_ON_ICE	= 2.0	# Of slipping when on ice.
-PROB_FALL_ON_GROUND	= 10.0	# Of falling down on bare ground.
-PROB_HIT_TREE   	= 25.0	# Of hitting tree, each turn in trees
-PROB_BAD_LANDING	= 3.0	# Of landing badly from jump or hop.
+PROB_YETI_MELT = 1.0  # Of Yeti spontaneously melting.
+PROB_SKIS_MELT_YETI = 20.0  # Of melting Yeti by jumping over it.
+PROB_BAD_SPELL = 10.0  # Of "Summon Fire Demon" spell going awry.
+PROB_BAD_TELEPORT = 10.0  # Of a teleport going wrong.
+PROB_BAD_ICBM = 30.0  # Of your ICBM exploding on launch.
+PROB_SLIP_ON_ICE = 2.0  # Of slipping when on ice.
+PROB_FALL_ON_GROUND = 10.0  # Of falling down on bare ground.
+PROB_HIT_TREE = 25.0  # Of hitting tree, each turn in trees
+PROB_BAD_LANDING = 3.0  # Of landing badly from jump or hop.
 
 # Number of points awarded to the player for the successful completion
 # of one jump.  For scoring purposes, a hop is considered to consist
 # of exactly one half-jump.
-POINTS_PER_JUMP	= 20
+POINTS_PER_JUMP = 20
 
 # Number of points awarded to the player for each meter of horizontal
 # or vertical motion during each turn.
@@ -95,32 +104,37 @@ POINTS_PER_MELTED_YETI = 100
 POINTS_PER_INJURY_DEGREE = -40
 
 # The injury categories.
-SLIGHT_INJURY		= 0
-MODERATE_INJURY		= 3
-SEVERE_INJURY		= 6
+SLIGHT_INJURY = 0
+MODERATE_INJURY = 3
+SEVERE_INJURY = 6
 
 # The randomness of injury degrees.
-INJURY_RANDOMNESS	= 6
+INJURY_RANDOMNESS = 6
 
 colordict = {
-    REP_SNOW	: curses.COLOR_WHITE,
-    REP_TREE	: curses.COLOR_GREEN,
-    REP_PLAYER	: curses.COLOR_MAGENTA,
-    REP_GROUND	: curses.COLOR_YELLOW,	# Brown on PC-compatibles
-    REP_ICE	: curses.COLOR_CYAN,
-    REP_YETI	: curses.COLOR_BLUE,
-    REP_ICBM	: curses.COLOR_MAGENTA,
-    REP_DEMON	: curses.COLOR_RED
-    }
+    REP_SNOW: curses.COLOR_WHITE,
+    REP_TREE: curses.COLOR_GREEN,
+    REP_PLAYER: curses.COLOR_MAGENTA,
+    REP_GROUND: curses.COLOR_YELLOW,  # Brown on PC-compatibles
+    REP_ICE: curses.COLOR_CYAN,
+    REP_YETI: curses.COLOR_BLUE,
+    REP_ICBM: curses.COLOR_MAGENTA,
+    REP_DEMON: curses.COLOR_RED,
+}
+
 
 def percent(X):
     return (random.randint(0, 9999) / 100.0) <= (X)
+
+
 def exists(X):
     return X is not None
+
 
 # pylint: disable=too-many-instance-attributes
 class SkiWorld:
     "The game state."
+
     def __init__(self):
         # Constants controlling the multiple cellular growth
         # automatons that are executed in parallel to generate
@@ -206,14 +220,17 @@ class SkiWorld:
             # Generate this character of the next level based upon
             # the characteristics of the nearby characters on the
             # current level.
-            if percent(self.prob_tree[num_nearby_trees]) and \
-                   ((i != self.player_pos) or (num_nearby_trees > 0)):
+            if percent(self.prob_tree[num_nearby_trees]) and (
+                (i != self.player_pos) or (num_nearby_trees > 0)
+            ):
                 self.slope[i] = REP_TREE
-            elif percent(self.prob_ice[num_nearby_ice]) and \
-                 ((i != self.player_pos) or (num_nearby_ice > 0)):
+            elif percent(self.prob_ice[num_nearby_ice]) and (
+                (i != self.player_pos) or (num_nearby_ice > 0)
+            ):
                 self.slope[i] = REP_ICE
-            elif percent(self.prob_ground[num_nearby_ground]) and \
-                 ((i != self.player_pos) or (num_nearby_ground > 0)):
+            elif percent(self.prob_ground[num_nearby_ground]) and (
+                (i != self.player_pos) or (num_nearby_ground > 0)
+            ):
                 self.slope[i] = REP_GROUND
             else:
                 self.slope[i] = REP_SNOW
@@ -226,8 +243,9 @@ class SkiWorld:
         # addition.  Note that we must add the line length into the
         # expression before taking the modulus to make sure that we
         # are not taking the modulus of a negative integer.
-        self.player_pos = (self.player_pos +
-                        player.player_speed + len(self.slope)) % len(self.slope)
+        self.player_pos = (
+            self.player_pos + player.player_speed + len(self.slope)
+        ) % len(self.slope)
 
         # Generate the updated slope.
         self.gen_next_slope()
@@ -238,7 +256,7 @@ class SkiWorld:
             # close to the player.
             while True:
                 self.yeti = self.teleport()
-                if not self.nearby(self.yeti,MIN_YETI_APPEARANCE_DISTANCE):
+                if not self.nearby(self.yeti, MIN_YETI_APPEARANCE_DISTANCE):
                     break
 
         # Increase the initial appearance probabilities of all obstacles and
@@ -253,8 +271,9 @@ class SkiWorld:
         # or he may spontaneously melt. Otherwise move him towards the player.
         # If there is a	tree in the way, the Yeti is blocked.
         if exists(self.yeti):
-            if (self.nearby(self.yeti) and percent(PROB_SKIS_MELT_YETI)) \
-                   or percent(PROB_YETI_MELT):
+            if (self.nearby(self.yeti) and percent(PROB_SKIS_MELT_YETI)) or percent(
+                PROB_YETI_MELT
+            ):
                 self.yeti = None
                 player.num_snomen_melted += 1
 
@@ -266,7 +285,7 @@ class SkiWorld:
                 if self.slope[self.yeti - 1] != REP_TREE:
                     self.yeti -= 1
 
-	# If there is an ICBM, handle it.
+        # If there is an ICBM, handle it.
         if exists(self.icbm_pos):
             # If there is a Yeti, move the ICBM towards him.  Else,
             # self-destruct the ICBM.
@@ -278,7 +297,7 @@ class SkiWorld:
             else:
                 self.icbm_pos = None
 
-	# If there is a fire demon on the level, handle it.
+        # If there is a fire demon on the level, handle it.
         if exists(self.demon_pos):
             # If there is a Yeti on the current level, move the demon
             # towards him.  Else, the demon might decide to leave.
@@ -318,6 +337,7 @@ class SkiWorld:
         picture = colorize(picture)
         return "%4d %s" % (self.level_num, picture)
 
+
 class SkiPlayer:
     "The player in all his glory."
     injuries = (
@@ -332,7 +352,8 @@ class SkiPlayer:
         "You have a broken arm and a broken leg.",
         "You have four broken limbs and a cut!",
         "You broke every bone in your body!",
-        "I'm sorry to tell you that you have been killed....")
+        "I'm sorry to tell you that you have been killed....",
+    )
 
     def __init__(self):
         self.jump_count = -1
@@ -353,11 +374,15 @@ class SkiPlayer:
         print("!\n\n%s  %s\n" % (msg, SkiPlayer.injuries[degree]))
 
         # Print the statistics of the game.
-        print("You skiied %d meters with %d jumps and melted %d %s."%(\
-                        self.meters_travelled,
-                        self.num_jumps_attempted,
-                        self.num_snomen_melted,
-                        ("Yeti", "Yetis")[self.num_snomen_melted != 1]))
+        print(
+            "You skiied %d meters with %d jumps and melted %d %s."
+            % (
+                self.meters_travelled,
+                self.num_jumps_attempted,
+                self.num_snomen_melted,
+                ("Yeti", "Yetis")[self.num_snomen_melted != 1],
+            )
+        )
 
         # Initially calculate the player's score based upon the number of
         # meters travelled.
@@ -398,12 +423,11 @@ class SkiPlayer:
 
         # If we are on ice, we might slip.
         if (world.terrain() == REP_ICE) and percent(PROB_SLIP_ON_ICE):
-            self.__accident("Oops!  You slipped on the ice!",SLIGHT_INJURY)
+            self.__accident("Oops!  You slipped on the ice!", SLIGHT_INJURY)
 
         # If there is a Yeti next to us, he may grab us.
         if world.nearby(world.yeti):
-            self.__accident("Yikes!  The Yeti's got you!",MODERATE_INJURY)
-
+            self.__accident("Yikes!  The Yeti's got you!", MODERATE_INJURY)
 
     def update_player(self):
         "Update state of player for current move."
@@ -416,42 +440,43 @@ class SkiPlayer:
     def do_command(self, world, cmdline):
         # Print a prompt, and read a command.  Return True to advance game.
         cmd = cmdline[0].upper()
-        if cmd == '?':
+        if cmd == "?":
             print((__doc__ % version) + terrain_key)
             return False
-        elif cmd == '!':
+        elif cmd == "!":
             os.system(cmdline[1:])
             return False
-        elif cmd == 'R': 	# Move right
-            if ((world.terrain() != REP_ICE) and \
-                        (self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED)):
+        elif cmd == "R":  # Move right
+            if (world.terrain() != REP_ICE) and (
+                self.player_speed < MAX_HORIZONTAL_PLAYER_SPEED
+            ):
                 self.player_speed += 1
             return True
-        elif cmd == 'L':	# Move left
-            if ((world.terrain() != REP_ICE) and \
-                        (self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED)):
+        elif cmd == "L":  # Move left
+            if (world.terrain() != REP_ICE) and (
+                self.player_speed > -MAX_HORIZONTAL_PLAYER_SPEED
+            ):
                 self.player_speed -= 1
             return True
-        elif cmd == 'J':	# Jump
+        elif cmd == "J":  # Jump
             self.jump_count = random.randint(0, 5) + 4
             self.num_jumps_attempted += 1.0
             return True
-        elif cmd == 'H':	# Do a hop
+        elif cmd == "H":  # Do a hop
             self.jump_count = random.randint(0, 2) + 2
             self.num_jumps_attempted += 0.5
             return True
-        elif cmd == 'T':	# Attempt teleportation
+        elif cmd == "T":  # Attempt teleportation
             if percent(PROB_BAD_TELEPORT):
-                self.__accident("You materialized 25 feet in the air!",
-                              SLIGHT_INJURY)
+                self.__accident("You materialized 25 feet in the air!", SLIGHT_INJURY)
             world.player_pos = world.teleport()
             return True
-        elif cmd == 'I':	# Launch backpack ICBM
+        elif cmd == "I":  # Launch backpack ICBM
             if percent(PROB_BAD_ICBM):
                 self.__accident("Nuclear blast in your backpack!", SEVERE_INJURY)
             world.icbm_pos = world.player_pos
             return True
-        elif cmd == 'D':	# Incant spell for fire demon
+        elif cmd == "D":  # Incant spell for fire demon
             if percent(PROB_BAD_SPELL):
                 self.__accident("A bad spell -- the demon grabs you!", MODERATE_INJURY)
             world.demon_pos = world.teleport()
@@ -460,16 +485,18 @@ class SkiPlayer:
             # Any other command just advances
             return True
 
+
 def colorize(picture):
     "Colorize special characters in a display list."
     for (i, c) in enumerate(picture):
-        if (i == 0 or (c != picture[i-1][-1])):
+        if i == 0 or (c != picture[i - 1][-1]):
             if c in colordict:
                 picture[i] = colordict[c].decode("ascii") + c
             else:
                 picture[i] = reset + c
     picture += reset
     return "".join(picture)
+
 
 # Main sequence
 if __name__ == "__main__":
@@ -505,21 +532,21 @@ if __name__ == "__main__":
             # If we are jumping, just finish the line.  Otherwise, check for
             # obstacles, and do a command.
             if player.jump_count >= 0:
-                sys.stdout.write('\n')
+                sys.stdout.write("\n")
             else:
                 player.check_obstacles(world)
                 if repeat:
                     repeat -= 1
                 if repeat:
-                    sys.stdout.write('\n')
+                    sys.stdout.write("\n")
                 else:
                     cmd = input("? ")
-                    if cmd == '':
-                        cmd = '\n'
+                    if cmd == "":
+                        cmd = "\n"
                     elif cmd[0] in "0123456789":
                         if cmd[-1] in "0123456789":
                             repeat = int(cmd)
-                            cmd = '\n'
+                            cmd = "\n"
                         else:
                             repeat = int(cmd[:-1])
                             cmd = cmd[-1]
