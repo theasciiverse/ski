@@ -53,8 +53,12 @@ ski-$(VERS).tar.gz: $(SOURCES)
 
 dist: ski-$(VERS).tar.gz
 
+NEWSVERSION=$(shell sed -n <NEWS '/^[0-9]/s/:.*//p' | head -1)
+
 release: ski-$(VERS).tar.gz ski.html
+	@[ $(VERS) = $(NEWSVERSION) ] || { echo "Version mismatch!"; exit 1; }
 	shipper version=$(VERS) | sh -e -x
 
 refresh: ski.html
+	@[ $(VERS) = $(NEWSVERSION) ] || { echo "Version mismatch!"; exit 1; }
 	shipper -N -w version=$(VERS) | sh -e -x
