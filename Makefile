@@ -6,16 +6,21 @@
 #
 VERS=$(shell sed <ski -n -e '/version *= *"\(.*\)"/s//\1/p')
 
-SOURCES = README COPYING NEWS ski ski.xml ski.6 Makefile \
+SOURCES = README COPYING NEWS ski ski.adoc ski.6 Makefile \
 	control ski.png ski.desktop
 
 all: ski.6
 
-ski.6: ski.xml
-	xmlto man ski.xml
+# Note: to suppress the footers with timestamps being generated in HTML,
+# we use "-a nofooter".
+# To debug asciidoc problems, you may need to run "xmllint --nonet --noout --valid"
+# on the intermediate XML that throws an error.
+.SUFFIXES: .html .adoc .6
 
-ski.html: ski.xml
-	xmlto html-nochunks ski.xml
+.adoc.6:
+	asciidoctor -D. -a nofooter -b manpage $<
+.adoc.html:
+	asciidoctor -D. -a nofooter -a webfonts! $<
 
 clean:
 	rm -f *~ *.6 *.html *.rpm *.lsm MANIFEST
@@ -30,13 +35,13 @@ install: ski.6 uninstall
 	install -m 0644 ski.6 $(DESTDIR)/usr/share/man/man6/
 	install -m 0644 ski.desktop $(DESTDIR)/usr/share/applications
 	install -m 0644 ski.png $(DESTDIR)/usr/share/pixmaps/
-	install -m 0644 ski.xml $(DESTDIR)/usr/share/appdata/
+	install -m 0644 ski.adoc $(DESTDIR)/usr/share/appdata/
 
 uninstall:
 	rm -f /usr/bin/ski /usr/share/man/man6/ski.6
 	rm -f /usr/share/applications/ski.desktop
 	rm -f /usr/share/pixmaps/ski.png
-	rm -f /usr/share/appdata/ski.xml
+	rm -f /usr/share/appdata/ski.adoc
 
 pylint:
 	@pylint --score=n ski
