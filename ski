@@ -23,7 +23,7 @@ from __future__ import print_function
 # pylint: disable=multiple-imports
 import time, random, curses, copy, sys, os
 
-version = "6.14"
+version = "6.15"
 
 REP_SNOW = "."
 REP_TREE = "Y"
