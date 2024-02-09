@@ -114,7 +114,7 @@ INJURY_RANDOMNESS = 6
 colordict = {
     REP_SNOW: curses.COLOR_WHITE,
     REP_TREE: curses.COLOR_GREEN,
-    REP_PLAYER: curses.COLOR_MAGENTA,
+    REP_PLAYER: curses.A_STANDOUT,
     REP_GROUND: curses.COLOR_YELLOW,  # Brown on PC-compatibles
     REP_ICE: curses.COLOR_CYAN,
     REP_YETI: curses.COLOR_BLUE,
