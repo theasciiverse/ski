@@ -122,6 +122,8 @@ colordict = {
     REP_DEMON: curses.COLOR_RED,
 }
 
+reset = ""
+
 
 def percent(X):
     return (random.randint(0, 9999) / 100.0) <= (X)
@@ -235,7 +237,7 @@ class SkiWorld:
             else:
                 self.slope[i] = REP_SNOW
 
-    def update_level(self):
+    def update_level(self, player):
         # Go to the next level, and move the player.
         self.level_num += 1
 
@@ -429,7 +431,7 @@ class SkiPlayer:
         if world.nearby(world.yeti):
             self.__accident("Yikes!  The Yeti's got you!", MODERATE_INJURY)
 
-    def update_player(self):
+    def update_player(self, player):
         "Update state of player for current move."
         self.meters_travelled += abs(self.player_speed) + 1
         # If the player was jumping, decrement the jump count.
@@ -488,7 +490,7 @@ class SkiPlayer:
 
 def colorize(picture):
     "Colorize special characters in a display list."
-    for (i, c) in enumerate(picture):
+    for i, c in enumerate(picture):
         if i == 0 or (c != picture[i - 1][-1]):
             if c in colordict:
                 picture[i] = colordict[c].decode("ascii") + c
@@ -512,7 +514,7 @@ if __name__ == "__main__":
     # Arrange for color to be available
     curses.setupterm()
     color = curses.tigetstr("setaf")
-    for (ch, idx) in list(colordict.items()):
+    for ch, idx in list(colordict.items()):
         if color:
             colordict[ch] = curses.tparm(color, idx)
         else:
@@ -553,8 +555,8 @@ if __name__ == "__main__":
                 if not player.do_command(world, cmd):
                     continue
             world.manipulate_objects(player)
-            world.update_level()
-            player.update_player()
+            world.update_level(player)
+            player.update_player(player)
     except (KeyboardInterrupt, EOFError):
         sys.stdout.write(reset)
         print("\nBye!")
