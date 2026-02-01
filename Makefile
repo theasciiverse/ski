@@ -46,6 +46,9 @@ uninstall:
 pylint:
 	@pylint --score=n ski
 
+spellcheck:
+	@spellcheck ski.adoc
+
 version:
 	@echo $(VERS)
 

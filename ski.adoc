@@ -3,6 +3,8 @@
 // SPDX-FileCopyrightText: (C) Eric S. Raymond <esr@thyrsus.com>
 // SPDX-License-Identifier: BSD-2-Clause
 
+// spellcheck: add Stevans
+
 == NAME ==
 ski - an unusual skiing simulation game
 
@@ -99,7 +101,7 @@ t::
     fall down.
 i::
     Launch ICBM with nuclear warhead.  If your backpack is working well,
-    an ICBM will be launched from it towards the Yeti, travelling at
+    an ICBM will be launched from it towards the Yeti, traveling at
     three spaces per turn.  Launching ICBMs is dangerous, but once one is
     going, it can't hurt you.  If it is launched and loses its negative-infrared
     lock on the Yeti, it self-destructs.
