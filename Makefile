@@ -6,7 +6,7 @@
 #
 VERS=$(shell sed <ski -n -e '/version *= *"\(.*\)"/s//\1/p')
 
-SOURCES = README COPYING NEWS ski ski.adoc ski.6 Makefile \
+SOURCES = README.adoc COPYING NEWS ski ski.adoc ski.6 Makefile \
 	control ski.png ski.desktop
 
 all: ski.6

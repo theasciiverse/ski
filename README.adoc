@@ -1,4 +1,4 @@
-			ski, a fun and silly game
+=  ski, a fun and silly game
 
 Imagine you are skiing down an infinite slope, facing such hazards as
 trees, ice, bare ground, and the man-eating Yeti!  Unfortunately,
@@ -17,16 +17,20 @@ released under open-source terms by Eric S. Raymond.
 The internals of this game are actually kind of interesting.  The terrain
 generator is a simple cellular automaton that generates crude 2D fractals.
 
-See
-		http://www.catb.org/~esr/ski/
+See http://www.catb.org/~esr/ski/ for updates and related resources.
 
-for updates and related resources.
-
+----
 On 15 May 2006 Mark Stevans wrote:
 >Just wanted to thank you.  Very nice port, love the full-color
 >graphics.  Originally it was FORTRAN on DEC-10's, ported to C around
 >1981.  Your Python version should keep Ski! viable for another 10-20
 >years, but I might try to put up a Ruby version for the heck of it....
+----
 
 Years later I learned that the game had originally been written to use
 VT-100 terminals.
+
+This code is commonly packaged as "ski".
+
+image:https://repology.org/badge/vertical-allrepos/ski-game.svg[Repology
+package status]
