@@ -15,26 +15,31 @@ Available commands are:
  ? = print this help message.
 
 """
-# This code runs under both Python 2 and Python 3. Preserve this property!
-from __future__ import print_function
+# Python 3 only.
 
 # pylint: disable=invalid-name,missing-function-docstring,no-else-return,redefined-outer-name,consider-using-f-string,consider-using-enumerate
 
 # pylint: disable=multiple-imports
-import time, random, curses, copy, sys, os
+import copy
+import curses
+import os
+import random
+import sys
+import time
+from typing import Final, NoReturn, Optional
 
-version = "6.15"
+version: Final[str] = "6.15"
 
-REP_SNOW = "."
-REP_TREE = "Y"
-REP_GROUND = ":"
-REP_ICE = "#"
-REP_PLAYER = "I"
-REP_YETI = "A"
-REP_ICBM = "*"
-REP_DEMON = "D"
+REP_SNOW: Final[str] = "."
+REP_TREE: Final[str] = "Y"
+REP_GROUND: Final[str] = ":"
+REP_ICE: Final[str] = "#"
+REP_PLAYER: Final[str] = "I"
+REP_YETI: Final[str] = "A"
+REP_ICBM: Final[str] = "*"
+REP_DEMON: Final[str] = "D"
 
-terrain_key = [
+terrain_key_parts: Final[list[str]] = [
     "Terrain types:   ",
     REP_SNOW,
     " = snow      ",
@@ -56,62 +61,62 @@ Creatures:       ",
 ]
 
 # Length of line
-LINE_LEN = 70
+LINE_LEN: Final[int] = 70
 
 # Minimum distance from the player at which a new Yeti may appear.
-MIN_YETI_APPEARANCE_DISTANCE = 3
+MIN_YETI_APPEARANCE_DISTANCE: Final[int] = 3
 
 # Constant multiplied into the first element of the cellular growth
 # automaton probability array with each passing level.
-LEVEL_MULTIPLIER = 1.01
+LEVEL_MULTIPLIER: Final[float] = 1.01
 
 # Absolute value of maximum horizontal player speed.
-MAX_HORIZONTAL_PLAYER_SPEED = 5
+MAX_HORIZONTAL_PLAYER_SPEED: Final[int] = 5
 
-ICBM_SPEED = 3  # Horizontal speed of an ICBM.
-ICBM_RANGE = 2  # Horizontal Yeti lethality range of the ICBM.
-DEMON_RANGE = 1  # Horizontal Yeti lethality range of the demon.
-DEMON_SPEED = 1  # Horizontal maximum speed of the Fire Demon.
+ICBM_SPEED: Final[int] = 3  # Horizontal speed of an ICBM.
+ICBM_RANGE: Final[int] = 2  # Horizontal Yeti lethality range of the ICBM.
+DEMON_RANGE: Final[int] = 1  # Horizontal Yeti lethality range of the demon.
+DEMON_SPEED: Final[int] = 1  # Horizontal maximum speed of the Fire Demon.
 
 # Per-turn probabilities
-PROB_YETI_MELT = 1.0  # Of Yeti spontaneously melting.
-PROB_SKIS_MELT_YETI = 20.0  # Of melting Yeti by jumping over it.
-PROB_BAD_SPELL = 10.0  # Of "Summon Fire Demon" spell going awry.
-PROB_BAD_TELEPORT = 10.0  # Of a teleport going wrong.
-PROB_BAD_ICBM = 30.0  # Of your ICBM exploding on launch.
-PROB_SLIP_ON_ICE = 2.0  # Of slipping when on ice.
-PROB_FALL_ON_GROUND = 10.0  # Of falling down on bare ground.
-PROB_HIT_TREE = 25.0  # Of hitting tree, each turn in trees
-PROB_BAD_LANDING = 3.0  # Of landing badly from jump or hop.
+PROB_YETI_MELT: Final[float] = 1.0  # Of Yeti spontaneously melting.
+PROB_SKIS_MELT_YETI: Final[float] = 20.0  # Of melting Yeti by jumping over it.
+PROB_BAD_SPELL: Final[float] = 10.0  # Of "Summon Fire Demon" spell going awry.
+PROB_BAD_TELEPORT: Final[float] = 10.0  # Of a teleport going wrong.
+PROB_BAD_ICBM: Final[float] = 30.0  # Of your ICBM exploding on launch.
+PROB_SLIP_ON_ICE: Final[float] = 2.0  # Of slipping when on ice.
+PROB_FALL_ON_GROUND: Final[float] = 10.0  # Of falling down on bare ground.
+PROB_HIT_TREE: Final[float] = 25.0  # Of hitting tree, each turn in trees
+PROB_BAD_LANDING: Final[float] = 3.0  # Of landing badly from jump or hop.
 
 # Number of points awarded to the player for the successful completion
 # of one jump.  For scoring purposes, a hop is considered to consist
 # of exactly one half-jump.
-POINTS_PER_JUMP = 20
+POINTS_PER_JUMP: Final[int] = 20
 
 # Number of points awarded to the player for each meter of horizontal
 # or vertical motion during each turn.
-POINTS_PER_METER = 1
+POINTS_PER_METER: Final[int] = 1
 
 # Number of points awarded to the player for each Yeti that melts
 # during the course of the game, regardless of whether the player
 # passively caused the Yeti to melt by luring him from a snowbank, or
 # actively melted the Yeti using his skis, an ICBM, or with the
 # assistance of the Fire Demon.
-POINTS_PER_MELTED_YETI = 100
+POINTS_PER_MELTED_YETI: Final[int] = 100
 
 # Number of points docked from your score for each degree of injury.
-POINTS_PER_INJURY_DEGREE = -40
+POINTS_PER_INJURY_DEGREE: Final[int] = -40
 
 # The injury categories.
-SLIGHT_INJURY = 0
-MODERATE_INJURY = 3
-SEVERE_INJURY = 6
+SLIGHT_INJURY: Final[int] = 0
+MODERATE_INJURY: Final[int] = 3
+SEVERE_INJURY: Final[int] = 6
 
 # The randomness of injury degrees.
-INJURY_RANDOMNESS = 6
+INJURY_RANDOMNESS: Final[int] = 6
 
-colordict = {
+COLOR_INDICES: Final[dict[str, int]] = {
     REP_SNOW: curses.COLOR_WHITE,
     REP_TREE: curses.COLOR_GREEN,
     REP_PLAYER: curses.A_STANDOUT,
@@ -122,14 +127,16 @@ colordict = {
     REP_DEMON: curses.COLOR_RED,
 }
 
-reset = ""
+colordict: Final[dict[str, str]] = {}
+reset: str = ""
+terrain_key: str = ""
 
 
-def percent(X):
+def percent(X: float) -> bool:
     return (random.randint(0, 9999) / 100.0) <= (X)
 
 
-def exists(X):
+def exists(X: Optional[int]) -> bool:
     return X is not None
 
 
@@ -137,7 +144,7 @@ def exists(X):
 class SkiWorld:
     "The game state."
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Constants controlling the multiple cellular growth
         # automatons that are executed in parallel to generate
         # hazards.
@@ -150,37 +157,39 @@ class SkiWorld:
         #    [2] hazards edge stability
         #    [3] appearance of holes in solid hazards (this allows the Yeti
         #        to work his way through forests)
-        self.prob_tree = [0.0, 30.0, 70.0, 90.0]
-        self.prob_ice = [0.0, 30.0, 70.0, 90.0]
-        self.prob_ground = [0.0, 30.0, 70.0, 90.0]
+        self.prob_tree: list[float] = [0.0, 30.0, 70.0, 90.0]
+        self.prob_ice: list[float] = [0.0, 30.0, 70.0, 90.0]
+        self.prob_ground: list[float] = [0.0, 30.0, 70.0, 90.0]
 
-        self.level_num = 0
-        self.slope = [REP_SNOW] * LINE_LEN
-        self.player_pos = self.teleport()
-        self.yeti = None
-        self.icbm_pos = None
-        self.demon_pos = None
+        self.level_num: int = 0
+        self.slope: list[str] = [REP_SNOW] * LINE_LEN
+        self.player_pos: int = self.teleport()
+        self.yeti: Optional[int] = None
+        self.icbm_pos: Optional[int] = None
+        self.demon_pos: Optional[int] = None
 
         # Randomize the appearance probabilities.
         self.prob_tree[0] = (random.randint(0, 99)) / 500.0 + 0.05
         self.prob_ice[0] = (random.randint(0, 99)) / 500.0 + 0.05
         self.prob_ground[0] = (random.randint(0, 99)) / 500.0 + 0.05
-        self.prob_yeti_appearance = (random.randint(0, 99)) / 25.0 + 1.0
+        self.prob_yeti_appearance: float = (
+            (random.randint(0, 99)) / 25.0 + 1.0
+        )
 
-    def terrain(self):
+    def terrain(self) -> str:
         "What kind of terrain are we on?"
         return self.slope[self.player_pos]
 
-    def nearby(self, pos, minval=1):
+    def nearby(self, pos: Optional[int], minval: int = 1) -> bool:
         "Is the specified position near enough to the player?"
         return exists(pos) and abs(pos - self.player_pos) <= minval
 
-    def teleport(self):
+    def teleport(self) -> int:
         "Return a random location"
-        return random.choice(list(range(len(self.slope))))
+        return random.randrange(len(self.slope))
 
     # pylint: disable=too-many-branches
-    def gen_next_slope(self):
+    def gen_next_slope(self) -> None:
         # Generates the slope of the next level, dependent upon
         # the characteristics of the current level, the probabilities, and the
         # position of the player.
@@ -237,7 +246,7 @@ class SkiWorld:
             else:
                 self.slope[i] = REP_SNOW
 
-    def update_level(self, player):
+    def update_level(self, player: "SkiPlayer") -> None:
         # Go to the next level, and move the player.
         self.level_num += 1
 
@@ -268,7 +277,7 @@ class SkiWorld:
         self.prob_ground[0] *= LEVEL_MULTIPLIER
         self.prob_yeti_appearance *= LEVEL_MULTIPLIER
 
-    def manipulate_objects(self, player):
+    def manipulate_objects(self, player: "SkiPlayer") -> None:
         # If there is a Yeti, the player's jet-powered skis may melt him,
         # or he may spontaneously melt. Otherwise move him towards the player.
         # If there is a	tree in the way, the Yeti is blocked.
@@ -326,7 +335,7 @@ class SkiWorld:
                 self.yeti = None
                 player.num_snomen_melted += 1
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         "Create a picture of the current level."
         picture = copy.copy(self.slope)
         picture[self.player_pos] = REP_PLAYER
@@ -342,7 +351,7 @@ class SkiWorld:
 
 class SkiPlayer:
     "The player in all his glory."
-    injuries = (
+    injuries: tuple[str, ...] = (
         "However, you escaped injury!",
         "But you weren't hurt at all!",
         "But you only got a few scratches.",
@@ -357,14 +366,14 @@ class SkiPlayer:
         "I'm sorry to tell you that you have been killed....",
     )
 
-    def __init__(self):
-        self.jump_count = -1
-        self.num_snomen_melted = 0
-        self.num_jumps_attempted = 0.0
-        self.player_speed = 0
-        self.meters_travelled = 0
+    def __init__(self) -> None:
+        self.jump_count: int = -1
+        self.num_snomen_melted: int = 0
+        self.num_jumps_attempted: float = 0.0
+        self.player_speed: int = 0
+        self.meters_travelled: int = 0
 
-    def __accident(self, msg, severity):
+    def __accident(self, msg: str, severity: int) -> NoReturn:
         # "__accident" is called when the player gets into an __accident,
         # which ends the game.  "msg" is the description of the
         # __accident type, and "severity" is the severity.  This
@@ -410,7 +419,7 @@ class SkiPlayer:
         # Exit the game with a code indicating successful completion.
         sys.exit(0)
 
-    def check_obstacles(self, world):
+    def check_obstacles(self, world: SkiWorld) -> None:
         # If we are just landing after a jump, we might fall down.
         if (self.jump_count == 0) and percent(PROB_BAD_LANDING):
             self.__accident("Whoops!  A bad landing!", SLIGHT_INJURY)
@@ -431,15 +440,15 @@ class SkiPlayer:
         if world.nearby(world.yeti):
             self.__accident("Yikes!  The Yeti's got you!", MODERATE_INJURY)
 
-    def update_player(self, player):
+    def update_player(self) -> None:
         "Update state of player for current move."
         self.meters_travelled += abs(self.player_speed) + 1
         # If the player was jumping, decrement the jump count.
-        if player.jump_count >= 0:
-            player.jump_count -= 1
+        if self.jump_count >= 0:
+            self.jump_count -= 1
 
     # pylint: disable=too-many-return-statements,too-many-branches
-    def do_command(self, world, cmdline):
+    def do_command(self, world: SkiWorld, cmdline: str) -> bool:
         # Print a prompt, and read a command.  Return True to advance game.
         cmd = cmdline[0].upper()
         if cmd == "?":
@@ -488,39 +497,33 @@ class SkiPlayer:
             return True
 
 
-def colorize(picture):
+def colorize(picture: list[str]) -> str:
     "Colorize special characters in a display list."
     for i, c in enumerate(picture):
         if i == 0 or (c != picture[i - 1][-1]):
             if c in colordict:
-                picture[i] = colordict[c].decode("ascii") + c
+                picture[i] = colordict[c] + c
             else:
                 picture[i] = reset + c
-    picture += reset
+    picture.append(reset)
     return "".join(picture)
 
 
 # Main sequence
 if __name__ == "__main__":
-    try:
-        # pylint: disable=redefined-builtin
-        input = raw_input
-    except NameError:
-        pass
-
     # Initialize the random number generator.
     random.seed(time.time())
 
     # Arrange for color to be available
     curses.setupterm()
     color = curses.tigetstr("setaf")
-    for ch, idx in list(colordict.items()):
+    for ch, idx in list(COLOR_INDICES.items()):
         if color:
-            colordict[ch] = curses.tparm(color, idx)
+            colordict[ch] = curses.tparm(color, idx).decode("ascii")
         else:
-            colordict[ch] = b""
+            colordict[ch] = ""
     reset = (curses.tigetstr("sgr0") or b"").decode("ascii")
-    terrain_key = colorize(terrain_key)
+    terrain_key = colorize(terrain_key_parts)
 
     print("SKI!  Version %s.  Type ? for help." % version)
     world = SkiWorld()
@@ -556,7 +559,7 @@ if __name__ == "__main__":
                     continue
             world.manipulate_objects(player)
             world.update_level(player)
-            player.update_player(player)
+            player.update_player()
     except (KeyboardInterrupt, EOFError):
         sys.stdout.write(reset)
         print("\nBye!")
