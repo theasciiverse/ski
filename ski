@@ -172,9 +172,7 @@ class SkiWorld:
         self.prob_tree[0] = (random.randint(0, 99)) / 500.0 + 0.05
         self.prob_ice[0] = (random.randint(0, 99)) / 500.0 + 0.05
         self.prob_ground[0] = (random.randint(0, 99)) / 500.0 + 0.05
-        self.prob_yeti_appearance: float = (
-            (random.randint(0, 99)) / 25.0 + 1.0
-        )
+        self.prob_yeti_appearance: float = (random.randint(0, 99)) / 25.0 + 1.0
 
     def terrain(self) -> str:
         "What kind of terrain are we on?"
@@ -563,5 +561,9 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, EOFError):
         sys.stdout.write(reset)
         print("\nBye!")
-
+    finally:
+        # Should never happen
+        if reset:
+            sys.stdout.write(reset)
+            sys.stdout.flush()
 # end
