@@ -329,7 +329,7 @@ class SkiWorld:
 
         # If there is a Yeti and a fire demon, he might get melted.
         if exists(self.yeti) and exists(self.demon_pos):
-            if abs(self.yeti - self.demon_pos) <= 1:
+            if abs(self.yeti - self.demon_pos) <= DEMON_RANGE:
                 self.yeti = None
                 player.num_snomen_melted += 1
 
