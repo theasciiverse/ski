@@ -71,12 +71,12 @@ SOURCES = README.adoc COPYING NEWS ski ski.adoc ski.6 Makefile \
 version:
 	@echo $(VERSION)
 
-sng-$(VERSION).tar.gz: $(SOURCES)
-	mkdir sng-$(VERSION)
-	cp -r $(SOURCES) sng-$(VERSION)
-	tar -czf sng-$(VERSION).tar.gz sng-$(VERSION)
-	rm -fr sng-$(VERSION)
-	ls -l sng-$(VERSION).tar.gz
+ski-$(VERSION).tar.gz: $(SOURCES)
+	mkdir ski-$(VERSION)
+	cp -r $(SOURCES) ski-$(VERSION)
+	tar -czf ski-$(VERSION).tar.gz ski-$(VERSION)
+	rm -fr ski-$(VERSION)
+	ls -l ski-$(VERSION).tar.gz
 
 dist: ski-$(VERSION).tar.gz
 
