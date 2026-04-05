@@ -132,8 +132,8 @@ reset: str = ""
 terrain_key: str = ""
 
 
-def percent(X: float) -> bool:
-    return (random.randint(0, 9999) / 100.0) <= (X)
+def percent(x: float) -> bool:
+    return random.random() * 100 < x
 
 
 def exists(X: Optional[int]) -> bool:
