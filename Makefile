@@ -10,7 +10,7 @@ BINDIR      ?= $(PREFIX)/bin
 DATADIR     ?= $(PREFIX)/share
 MANDIR      ?= $(DATADIR)/man
 
-VERS=$(shell sed <ski -n -e '/version *= *"\(.*\)"/s//\1/p')
+VERSION=$(shell sed <ski -n -e '/version *= *"\(.*\)"/s//\1/p')
 
 # Rules
 
