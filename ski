@@ -509,11 +509,17 @@ def colorize(picture: list[str]) -> str:
 
 # Main sequence
 if __name__ == "__main__":
-    # Initialize the random number generator.
-    random.seed(time.time())
+    # C-style initialization of the random number generator.
+    # Unneeded - by default Python seeds from a good entropy source
+    # random.seed(time.time())
+
+    try:
+        curses.setupterm()
+    except curses.error as e:
+        print(e, file=sys.stderr)
+        raise SystemExit(1)
 
     # Arrange for color to be available
-    curses.setupterm()
     color = curses.tigetstr("setaf")
     for ch, idx in list(COLOR_INDICES.items()):
         if color:
