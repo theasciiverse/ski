@@ -412,7 +412,7 @@ class SkiPlayer:
         score = max(score, 0)
 
         # Print the player's score.
-        print("Your score for this run is %ld." % score)
+        print("Your score for this run is %d." % score)
 
         # Exit the game with a code indicating successful completion.
         sys.exit(0)
