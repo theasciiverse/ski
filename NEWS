@@ -1,5 +1,8 @@
 				ski project history
 
+6.16: 2026-04-05::
+  Code-hardening changes suggested by CharGPT 5.3.
+
 6.15: 2024-02-09::
   Fix minor bug related to Python 3 decoding.
   Make player more conspicuous on a black screen.

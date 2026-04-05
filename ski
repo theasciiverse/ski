@@ -28,7 +28,7 @@ import sys
 import time
 from typing import Final, NoReturn, Optional
 
-version: Final[str] = "6.15"
+version: Final[str] = "6.16"
 
 REP_SNOW: Final[str] = "."
 REP_TREE: Final[str] = "Y"
