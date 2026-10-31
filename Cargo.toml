@@ -1,0 +1,21 @@
+[package]
+name = "ski"
+version = "6.16.0"
+edition = "2024"
+description = "Ski! Evade the deadly Yeti on your jet-powered skis. Mark Stevans' game, Eric S. Raymond's Python port, in Rust for the Asciiverse catalog."
+license = "BSD-2-Clause"
+repository = "https://github.com/theasciiverse/ski"
+publish = false
+
+[dependencies]
+fastrand = "2"
+ctrlc = "3"
+
+[target.'cfg(windows)'.dependencies]
+enable-ansi-support = "0.2"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"

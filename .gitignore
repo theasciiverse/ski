@@ -5,3 +5,4 @@
 *.html
 MANIFEST
 *.tar.gz
+/target
